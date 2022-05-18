@@ -2026,10 +2026,10 @@ class Content(models.Model):
 
 ```python
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.qq.com'		#腾讯QQ邮箱SMTP服务器地址
-EMAIL_PORT = 25					#SMTP服务器端口号
-EMAIL_HOST_USER = '2868470542@qq.com'# 发送邮件的QQ邮箱
-EMAIL_HOST_PASSWORD = 'ctbotyzjethddebe'	#授权码
+EMAIL_HOST = 		#腾讯QQ邮箱SMTP服务器地址
+EMAIL_PORT = 				#SMTP服务器端口号
+EMAIL_HOST_USER = '# 发送邮件的QQ邮箱
+EMAIL_HOST_PASSWORD = 	#授权码
 EMAIL_USE_TLS = False	#与SMTP服务器通信时，是否启动TLS链接（安全链接）默认False
 ```
 
