@@ -1,0 +1,250 @@
+#define MAXSIZE     1000
+typedef int ElemType;
+ElemType  STACK[MAXSIZE];
+int  Top;
+
+/**********************************栈的初始化*/ 
+struct  node { 
+        ElemType  data;
+        struct  node  *link;
+};
+typedef  struct node  *Nodeptr;
+typedef  struct node  Node;
+Nodeptr Top;//即为链表的头结点指针
+
+/****************堆栈**************/
+
+void  initStack( );//初始化堆栈
+int  isEmpty( );//测试堆栈是否为空 
+int isFull(  );//测试堆栈是否已满 
+void  push( ElemType s[ ],  ElmeType item );//进栈 
+int pop( ElemType s[ ]);//出栈 
+
+/****************链栈**************/
+void initStack(  );//初始化链栈 
+int  isEmpty( );//测试链栈是否为空 
+void  push( ElemType item );//进栈 
+int  pop( );//出栈 
+
+
+/************************************   堆栈*/
+void  initStack( )
+{
+        Top= -1;
+}
+int  isEmpty( )
+{
+       return Top== -1;
+} 
+int isFull(  )
+{
+      return Top==MAXSIZE-1;
+}
+void  push( ElemType s[ ],  ElmeType item )
+{
+        if( isFull() )
+               Error("Full Stack!");
+        else
+			s[++Top]=item; 
+}
+int pop( ElemType s[ ])
+{
+      if(isEmpty())
+             Error("Empty Stack");
+      else
+			return s[Top--]; 
+}
+
+/************************************   链栈 */
+void initStack(  )
+{
+        Top=NULL;
+}
+int  isEmpty( )
+{
+       return Top==NULL;
+}
+void  push( ElemType item )
+{    Nodeptr p;
+      if( (p=(Nodeptr)malloc(sizeof(Node)))==NULL )
+             Error("No memory!");  
+      else{
+             p->data=item;           /*将item送新结点数据域*/
+             p->link=Top;              /*将新结点插在链表最前面*/
+             Top=p;                         /*修改栈顶指针的指向*/
+      }
+}
+int  pop( )
+{    Nodeptr p;
+      ElemType item;
+     if ( isEmpty() ) 
+           Error(“Empty Stack!”);                      /* 栈中无元素*/
+     else{
+           p=Top;                          /* 暂时保存栈顶结点的地址*/  
+           item=Top->data;         /*保存被删栈顶的数据信息*/
+           Top=Top->link;            /* 删除栈顶结点 */ 
+           free(p);                         /* 释放被删除结点*/
+            return item;                         /* 返回出栈元素*/
+      }
+}
+
+
+
+//有效括号的算法
+int isValid(char * s){
+    int i,top=0;
+    char m[10005];
+    for(i=0;i<strlen(s);i++)
+    {
+        if(s[i]=='(')
+        {
+            m[top]='(';
+            top++;
+        }
+        else if(s[i]=='[')
+        {
+            m[top]='[';
+            top++;
+        }
+        else if(s[i]=='{')
+        {
+            m[top]='{';
+            top++;
+        }
+        else if(s[i]=='<')
+        {
+            m[top]='<';
+            top++;
+        }
+        else if(s[i]==')')
+        {
+            if(top==0 || m[top-1]!='(')
+            {
+                return 0;
+            }
+            else
+            {
+                top--;
+            }
+        }
+        else if(s[i]==']')
+        {
+            if(top==0 || m[top-1]!='[')
+            {
+                return 0;
+            }
+            else
+            {
+                top--;
+            }
+        }
+        else if(s[i]=='}')
+        {
+            if(top==0 || m[top-1]!='{')
+            {
+                return 0;
+            }
+            else
+            {
+                top--;
+            }
+        }
+        else if(s[i]=='>')
+        {
+            if(top==0 || m[top-1]!='<')
+            {
+                return 0;
+            }
+            else
+            {
+                top--;
+            }
+        }
+    }
+    if(top!=0)
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+
+//***************************链栈的相关算法**********/
+typedef int ElemType;
+struct stack {
+	ElemType *base;
+	ElemType *top;
+	int stackSize;
+};
+typedef struct stack sqStack;
+typedef struct stack *sqStackp;
+void InitStack( sqStackp s ) {
+	s->base = (ElemType *)malloc(STACK_INIT_SIZE * sizeof(ElemType));
+	if ( !s->base ) {
+		exit(0);
+	}
+	s->top = s->base;
+	s->stackSize = STACK_INIT_SIZE ;
+}
+void Push (sqStackp s, ElemType e) {
+	if(s->top - s->base >= s->stackSize) {
+		s->base = (ElemType *)realloc (s->base,(s->stackSize + STACKINCREMENT) * sizeof(ElemType));
+		if( !s->base) {
+			exit(0);
+		}
+	}
+	*(s->top) = e;
+	s->top++;
+}
+void Pop(sqStackp s , ElemType *e) {
+	if( s->base == s->top)
+		return;
+	*e = *--(s->top);
+}
+int StackLen(sqStack s) {
+	return (s.top - s.base)
+}
+
+//***********************************队列的函数
+#define MAXSIZE 1000
+int  Queue[MAXSIZE];
+int  Front,Rear,Count;
+void initQueue() 
+{
+    Front  = 0;
+    Rear   = MAXSIZE-1;
+    Count = 0;
+}
+int isEmpty()
+{
+    return Count == 0;
+}
+int isFull()
+{
+    return Count == MAXSIZE;
+}
+void enQueue(int queue[], int item)
+{
+    if(isFull())                       /* 队满，插入失败 */  
+        exit(0);
+    else{
+        Rear = (Rear+1) % MAXSIZE; 
+        queue[Rear]=item;
+        Count++;/* 队未满，插入成功 */                                     
+    }
+}
+int  deQueue(int queue[])
+{ 
+    int e;
+    if(isEmpty())
+        exit(0);     /* 队空，删除失败 */
+    else{
+        e=queue[Front];
+        Count--;                             /* 队非空，删除成功 */
+        Front = (Front+1)%MAXSIZE;
+    	return e;
+    }
+}

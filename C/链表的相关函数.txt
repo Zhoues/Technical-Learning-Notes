@@ -1,0 +1,289 @@
+# 链表算法
+
+###### 基础框架
+
+```c
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<stdbool.h>
+#define M 1000000
+struct node{
+	int data;
+	struct node *next;
+};
+typedef struct node Node;
+typedef struct node *Nodep;
+Nodep head=NULL,p,t,q;
+int main()
+{	
+
+	return 0;
+
+}
+```
+
+Nodeptr createList( int n );                            //创建一个线性表 
+int getLength( Nodeptr list );                         //获取线性表的长度； 
+Nodeptr insertFirst( Nodeptr list, ElemType item );   //list = insertFirst(list, item);  头插法改变头指针 
+void  insertNode(Nodeptr p, ElemType item);          //在指针p指的链结点之后插入一个数据项为item的链结点
+void  insertNode1( Nodeptr list, int n, ElemType item );      //在线性链表中第n(n>0)个结点后面插入一个数据项为item的新结点
+Nodeptr deleteNode1( Nodeptr list, Nodeptr r,  Nodeptr p );  //从非空线性链表中删除p指向的链结点******知道前驱节点 
+Nodeptr deleteNode2( Nodeptr list, Nodeptr p );             //从非空线性链表中删除p指向的链结点******不知道前驱节点 
+
+//Nodeptr list,p,q,t;
+int main()
+{	
+	
+
+return 0;
+
+}
+Nodeptr createList( int n )
+{
+	Nodeptr p,q,list=NULL;
+	int i;
+	for(i=1;i<=n;i++)
+	{
+		q=(Nodeptr)malloc(sizeof(Node));
+		//q->data=read();
+		q->link=NULL;
+		if(list==NULL)
+		{
+			list=q;p=list;
+		}
+		else
+		{
+			p->link=q;
+			p=q;
+		}
+	}
+	return list;
+}
+
+int getLength( Nodeptr list )
+{
+	Nodeptr p;
+	int n=0;
+	for(p=list;p!=NULL;p=p->link)
+	{
+		n++;
+	}
+	return n;
+}
+
+Nodeptr insertFirst( Nodeptr list, ElemType item )
+//list = insertFirst(list, item);
+{
+	/* list指向链表首结点 */ 
+	Nodeptr p;
+	p=(Nodeptr)malloc(sizeof(Node));
+	p->data=item;
+	p->link=list;
+	return p;
+}
+void  insertNode(Nodeptr p, ElemType item)
+{
+	Nodeptr q;
+	q=(Nodeptr)malloc(sizeof(Node));
+	q->data=item;
+	q->link=p->link;
+	p->link=q;
+}
+
+void  insertNode1( Nodeptr list, int n, ElemType item )
+{
+	Nodeptr p=list,q;
+	int i;
+	for(i=1;i<=n-1;i++)
+	{
+		if(p->link==NULL)
+		{
+			break;
+		}
+		p=p->link;
+	}
+	q=(Nodeptr)malloc(sizeof(Node));
+	q->data=item;
+	q->link=NULL;
+	q->link=p->link;
+	p->link=q;
+}
+
+Nodeptr deleteNode1( Nodeptr list, Nodeptr r,  Nodeptr p )
+{
+	if(p==list)
+		list=p->link;
+	else
+		r->link=p->link;
+	free(p);  //******
+	return list;
+}
+
+Nodeptr deleteNode2( Nodeptr list, Nodeptr p )
+{
+	Nodeptr r;
+	if(p==list)
+	{
+		list=list->link;
+		free(p);
+	}
+	else
+	{
+		for(r=list;r->link!=p && r->link!=NULL;r=r->link) ;
+		if(r->link!=NULL)
+		{
+			r->link=p->link;
+			free(p);
+		}
+	}
+	return list;
+}
+
+//双向链表插入节点（非头节点） 
+p=(DNoteptr)malloc(sizeof(DNode)); /* 申请一个新的结点 */
+p->data=item;
+p->llink=q;
+p->rlink=q->rlink;
+q->rlink->llink=p;
+q->rlink=p;
+//*****（是头节点）
+p->rlink = list;
+p->llink = list->llink;
+list->llink->rlink = p;
+list->llink = p;
+list = p ; 
+
+//双向链表删除节点（非头节点）
+q->llink->rlink=q->rlink;
+q->rlink->llink=q->llink;
+free(q); 
+//*****（是头节点）
+list->rlink->llink = list->link;
+list->llink->rlink = list->rlink;
+q = list;
+list = list->rlink; 
+free(q);
+
+//双向链表构造第一个节点
+list->llink->rlink=p;
+p->llink=list->llink;
+p->rlink=list;
+list->llink=p; 
+
+
+***********************************************************构造链表并且读出
+
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include<stdlib.h>
+#include<ctype.h>
+struct node{
+	int data;
+	struct node *next;
+};
+
+int main() {
+	struct node *head,*p,*q,*t;
+	head=NULL;
+	int n,i,j,a;
+	
+	
+	scanf("%d",&a);
+	if(head == NULL)
+	{
+		p=(struct node *)malloc(sizeof(struct node ));
+		head = p;
+	}
+	else
+	{
+	    p->next =(struct node *)malloc(sizeof(struct node));
+	    p = p->next;
+	}
+	p->data=a;
+	p->next=NULL;
+	
+	t=head;
+		while(t!=NULL)
+		{
+			printf("%d ",t->data); 
+			t=t->next;
+		}
+		//free(p);
+		printf("\n");
+	while(~scanf("%d",&a))
+	{
+		t=head;
+		
+		while(t !=NULL)
+		{
+			if(head->data>a)
+			{
+				p=(struct node*)malloc(sizeof(struct node));
+				p->data=a;
+				p->next=head;
+				head=p;
+				break;
+			}
+			else if (t->next==NULL || t->next->data>a)
+			{
+				p=(struct node*)malloc(sizeof(struct node));
+				p->data=a;
+				p->next=t->next;
+				t->next=p;
+				break;
+			}
+			t=t->next;
+		}
+		t=head;
+		while(t!=NULL)
+		{
+			printf("%d ",t->data); 
+			t=t->next;
+		}
+		//free(p);
+		printf("\n");
+	}
+	
+	return 0;
+}
+//链表倒置
+Nodep reverseList(Nodep head)
+{
+    if (head == NULL) {
+        return NULL;
+    }
+    Nodep pre = head;
+    Nodep cur = head->next;
+    Nodep temp = NULL;
+    while (cur != NULL) {
+        // temp记录的是cur的next指针，这个很重要
+        temp = cur->next;
+        // 拆除原有的指向关系
+        cur->next = pre;
+        // pre和cur后移
+        pre = cur;
+        cur = temp;
+    }
+    // 最后记得head->next要置空
+    head->next = NULL;
+    return pre;
+}
+
+
+//倒数第k个结点（快慢指针）
+struct ListNode* getKthFromEnd(struct ListNode* head, int k){
+    struct ListNode* first = head;
+    struct ListNode* last = head;
+    for(int i = 1; i < k ;i++)
+        first = first->next;
+    while(first->next)
+    {
+        first = first->next;
+        last=last->next;
+    }
+    return last;
+}

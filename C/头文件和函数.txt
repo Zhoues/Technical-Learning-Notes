@@ -1,0 +1,125 @@
+//函数主体
+
+```c
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<stdbool.h>
+#define M 1000000
+typedef long long LL;
+int main()
+{	
+	
+	return 0;
+}
+```
+
+struct node{
+	int data;
+	struct node *next;
+};
+typedef struct node Node;
+typedef struct node *Nodep;
+Nodep head=NULL,p,t,q;
+//函数快速排序
+
+#include<stdio.h>
+#include<stdlib.h>
+int compar(const void*a,const void*b);
+int s[20000005];
+int main(){
+	int n,m;
+	scanf("%d"，&n);
+	for(int i=0;i<n;i++) scanf("%d",&s[i]);
+	qsort(s,n,sizeof(int),compar);
+	for(int i=0;i<n;i++) printf("%d ",s[i]);
+}
+
+int compar (const void * a, const void * b)
+{
+    if(*(int*)a > *(int*)b) return 1;
+    if(*(int*)a < *(int*)b) return -1;
+    if(*(int*)a == *(int*)b) return 0;
+}
+int compare(const void*p1,const void*p2)
+{
+	struct student *a=(struct student*)p1;
+	struct student *b=(struct student*)p2;
+	return a->height>b->height;
+}
+
+//字符串倒置
+void str_rev(char s[]) 
+{
+	int hi=0, low=0;
+	char temp;
+	while(s[hi] != '\0')
+		hi++;
+	for(hi--; hi>low; low++, hi--) {
+		temp = s[low];
+		s[low] = s[hi];
+		s[hi] = temp;
+	}
+}
+//快读
+int read()
+{
+	int k=0;
+	char c=getchar();
+	while(c<'0'||c>'9')
+	{
+		c=getchar();
+	}
+	while(c>='0'&&c<='9')
+	{
+		k=(k<<1)+(k<<3)+c-48;
+		c=getchar();
+	}
+	return k;
+}
+//快写
+void write(long long x)
+{
+	if(x>9)
+	{
+		write(x/10);
+	}
+	putchar(x%10+48);
+}
+
+//KMP查找算法
+int KMPindex(char S[ ], char T[ ]) 
+{
+	int i = 0, j=0, *next;
+	next = (int *)malloc(sizeof(int)*(strlen(T)+1));
+	getnext(T, next);
+	while ( S[i]!='\0' && T[j]!='\0') {
+		if (S [i] == T[j] ) {
+			i++;
+			j++ ;
+		} else
+			(j == 0) ? i++ :( j = next[j]);
+	}
+	free(next);
+	if ( T[j] == '\0')
+		return i-j;
+	else
+		return -1;
+}
+void getnext(char T[], int next[])
+{
+	int i=0, j=-1;
+	next[0] = -1;
+	while(T[i]!='\0') {
+		if(j==-1 || T[i]==T[j])
+		{ 
+			i++;//i为后缀位置；j为前缀位置 i++;
+			j++;
+			next[i]=j;
+		} else
+			j = next[j]; //若字符不同，则j值回溯
+	}
+}
+

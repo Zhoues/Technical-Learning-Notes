@@ -1,0 +1,141 @@
+# 查找函数
+
+[TOC]
+
+
+
+###### 基本框架
+
+```c
+typedef struct HashNode{
+	char word[20];
+	int cnt;
+	struct HashNode *next;
+}Hash,*Hashp;
+Hashp table[MOD];
+```
+
+###### Hash函数（关键值函数）
+
+```c
+int hashKey(char *s) {
+    unsigned long long key = 0;
+    while (*s) {
+        key = key * 32 + *s++;
+    }
+    return key % MOD;
+}
+```
+
+###### Hash表插入
+
+```c
+void HashInsert(Hashp *table,char *s)
+{
+	int key=hashKey(s);    //获得键值 
+	Hashp p=table[key];
+	if(p==NULL)
+	{
+		p= (Hashp)malloc(sizeof(Hash));
+		p->next=NULL;
+		p->cnt=0;
+		strcpy(p->word,s);
+		table[key]=p;
+	}
+	else
+	{
+		while(p!=NULL && strcmp(s,p->word)!=0)
+			p=p->next;
+		if(p==NULL)
+		{
+			p= (Hashp)malloc(sizeof(Hash)); 
+			p->next=NULL;
+			p->cnt=0;
+			strcpy(p->word,s);
+		}
+	}
+	p->cnt+=1; 
+}
+```
+
+
+
+###### Hash表查找
+
+```c
+int SearchHash(Hashp *table,char *s)
+{
+	int key=hashKey(s);
+	Hashp p=table[key];
+	if(p!=NULL)
+	{
+		while (p!=NULL)
+		{
+			if(strcmp(p->word, s)!=0)
+			{
+				p = p->next;
+			}
+        	else return p->cnt;
+    	}	
+	}
+	if(p==NULL)	return 0;
+}
+```
+
+
+###### 二分查找
+
+```c
+int binsearch(int *key, int n, int k)
+{
+    int low = 0, high = n - 1, mid;
+    while (low <= high)
+    { // 查找结束的条件
+        mid = (low + high) / 2;
+        if (k == key[mid])
+            return mid; /*  查找成功  */
+        if (k > key[mid])
+            low = mid + 1; /*  准备查找后半部分 */
+        else
+            high = mid - 1; /* 准备查找前半部分 */
+    }
+    return -1; /*   查找失败  */
+}
+```
+
+###### lower_bound
+
+```c
+int lower_bound(LL *a,LL size, LL val)
+{
+    int first = 0, last = size -1, mid;
+    while (first <= last)
+    {
+        mid = last - (last - first) / 2;
+        if (a[mid] >= val)
+            last = mid - 1;
+        else
+            first = mid + 1;
+    }
+    return first;
+}
+```
+
+###### upper_bound
+
+```c
+int upper_bound(LL *a,LL size, LL val)
+{
+    int first = 0, last = size - 1, mid;
+    while (first <= last)
+    {
+        mid = last - (last - first) / 2;
+        if (a[mid] <= val)
+            first = mid + 1;
+        else
+            last = mid - 1;
+    }
+    return first;
+}
+```
+

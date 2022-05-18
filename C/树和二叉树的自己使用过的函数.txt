@@ -1,0 +1,528 @@
+# 树算法
+
+[TOC]
+
+
+
+###### 基本框架
+
+```c
+typedef struct TreeNode {
+    char val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+ }Tree,*Treep;
+
+//VISIT函数的具体内容
+void VISIT(Treep t)
+{
+	printf("%c",t->val);
+}
+```
+
+
+
+###### 前序遍历二叉树
+```c
+void preorder(Treep t)
+{
+    if(t!=NULL){
+        VISIT(t);      // 访问t指的结点 
+        preorder(t->left);
+        preorder(t->right);
+    }
+}
+```
+
+
+
+###### 中序遍历二叉树
+```c
+void inorder(Treep t)
+{
+    if(t!=NULL){
+        inorder(t->left);
+        VISIT(t);      // 访问t指的结点 
+        inorder(t->right);
+    }
+}
+```
+
+
+
+###### 后序遍历二叉树
+```c
+void postorder(Treep t)
+{
+    if(t!=NULL){
+        postorder(t->left);
+        postorder(t->right);
+	    VISIT(t);      // 访问t指的结点 
+    }
+}
+```
+
+
+
+###### 层次遍历二叉树
+```c
+void layerorder(Treep t)
+{
+	Treep Queue[200],p;
+	int front,rear;
+	if(t!=NULL)
+	{
+		Queue[0]=t;
+		front=-1,rear=0;
+		while(front<rear)
+		{
+			p=Queue[++front];
+			VISIT(p);
+			if(p->left!=NULL)	Queue[++rear]=p->left;
+			if(p->right!=NULL)	Queue[++rear]=p->right;
+		}
+	}
+}
+```
+
+
+
+###### 计算二叉树的最大高度
+```c
+int max(int x,int y)
+{
+    return x>y?x:y;
+}
+int maxDepth(struct TreeNode* root){
+    if(root==NULL)  return 0;
+    return (1 + max(maxDepth(root->left),maxDepth(root->right)));
+}
+```
+
+
+
+###### 计算二叉树的最小高度
+```c
+int min(int x,int y)
+{
+    return x<y?x:y;
+}
+int minDepth(struct TreeNode* root){
+    if(root==NULL)  return 0;
+    if(root->left==NULL && root->right==NULL)   return 1;
+    int min_depth=0x3f3f3f3f;
+    if(root->left!=NULL)
+    {
+        min_depth=min(min_depth,minDepth(root->left));
+    }
+    if(root->right!=NULL)
+    {
+        min_depth=min(min_depth,minDepth(root->right));
+    }
+   return 1+min_depth;
+}
+```
+
+
+
+###### 计算二叉树的直径
+```c
+int ans;
+int max(int x,int y)
+{
+    return x>y?x:y;
+}
+int Depth(struct TreeNode * t)
+{
+    if(t==NULL) return 0;
+    int leftDepth=Depth(t->left);
+    int rightDepth=Depth(t->right);
+    ans=max(ans,leftDepth+rightDepth+1);
+    return max(leftDepth,rightDepth)+1;
+}
+int diameterOfBinaryTree(struct TreeNode* root){
+    if(root==NULL)  return 0;
+    ans = 1;
+    Depth(root);
+    return ans - 1;
+}
+```
+
+
+
+###### 前序遍历构建二叉树
+```c
+void CreateTree(Treep *t)
+{
+	char ch;
+	ch=s[top];
+	top++;
+	if(ch=='#')
+	{
+		(*t)=NULL;
+	}
+	else if(ch=='\0')
+	{
+		return ;
+	}
+	else
+	{
+		(*t)=(Treep)malloc(sizeof(Tree));
+		(*t)->left=NULL;
+		(*t)->right=NULL;
+		(*t)->val=ch; 
+		CreateTree(&((*t)->left));
+		CreateTree(&((*t)->right));
+	}
+}
+```
+
+
+
+###### 二叉排序树的构造
+```c
+void InsertBST(Treep *t,int value)
+{
+	if(*t==NULL)
+	{
+		*t=(Treep)malloc(sizeof(Treep));
+		(*t)->left=(*t)->right=NULL;
+		(*t)->val=value;
+	}
+	else if(value<(*t)->val)
+	{
+		InsertBST(&((*t)->left),value);
+	} 
+	else
+	{
+		InsertBST(&((*t)->right),value);
+	} 
+}
+void insertBST(Treep *t,char *num)//构造BST 
+{
+	if(*t==NULL)//如果节点为空，构造节点 
+	{
+		*t=(Treep)malloc(sizeof(Tree));
+		strcpy((*t)->val,num);
+		(*t)->times=1;
+		(*t)->left=NULL;
+		(*t)->right=NULL;
+	}
+	else if(strcmp((*t)->val,num)>0)//字典序排序 
+	{
+		insertBST(&((*t)->left),num);
+	}	
+	else if(strcmp((*t)->val,num)<0)	//字典序排序 
+	{
+		insertBST(&((*t)->right),num);
+	}
+	else if(strcmp((*t)->val,num)==0)//相同则次数增加 
+	{
+		(*t)->times++;
+	}
+}
+```
+
+
+
+###### 广义表构建二叉树
+```c
+void CreateTree()
+{
+	Treep Stack[2000],p;
+	int flag=0,topp=-1;	
+	while(1)
+	{
+		char ch=s[top];
+		switch(ch){
+			case NULL:	return;
+			case'(':	Stack[++topp]=p;
+						flag=1;
+						break;
+			case')':	topp--;
+						break;				
+			case',':	flag=2;
+						break;
+			default:	p=(Treep)malloc(sizeof(Tree));
+						p->val=ch;
+						p->left=NULL;
+						p->right=NULL;
+						if(root==NULL)	root=p;
+						else if(flag==1)
+							Stack[topp]->left=p;
+						else if(flag==2)
+							Stack[topp]->right=p;		
+		}
+		top++;
+	}
+}
+```
+
+
+
+###### 判断两棵树是否为相同二叉树
+```c
+bool equalTree(Treep t1,Treep t2)
+{
+	if(t1==NULL && t2==NULL)	return true;
+	if(t1!= NULL && t2!=NULL && t1->val==t2->val && equalTree(t1->left,t2->left) && equalTree(t1->right,t2->right))
+		return true;
+	return false;
+}
+```
+
+
+
+###### 判断是否为对称二叉树
+```c
+bool Compare_Symmetric(struct TreeNode *p,struct TreeNode *q)
+{
+    if(p==NULL && q==NULL) 
+        return true;
+    if(p==NULL || q==NULL)
+        return false;
+    if(p->val!=q->val)
+        return false;
+    return Compare_Symmetric(p->left,q->right) && Compare_Symmetric(p->right,q->left);
+}
+bool isSymmetric(struct TreeNode* root){
+    if(root==NULL) return true;
+    else return Compare_Symmetric(root->left,root->right);
+}
+```
+
+
+
+###### 翻转二叉树
+```c
+struct TreeNode* invertTree(struct TreeNode* root) {
+    if (root == NULL) {
+        return NULL;
+    }
+    struct TreeNode* left = invertTree(root->left);
+    struct TreeNode* right = invertTree(root->right);
+    root->left = right;
+    root->right = left;
+    return root;
+}
+```
+
+
+
+###### 中序(前序/后序不行)遍历二叉树（非递归算法）
+```c
+void order_stack(Treep t)
+{
+	Treep Stack[200],p=t;
+	int top=-1;
+	if(t!=NULL)
+	{
+		do{
+			while(p!=NULL)
+			{
+				//VISIT(p);              //前序
+				Stack[++top]=p;
+				p=p->left;
+			}
+			p=Stack[top--];
+			VISIT(p);              //中序  
+			p=p->right;
+		}while(!(p==NULL && top==-1));
+	}
+}
+```
+
+
+
+###### 拷贝二叉树
+```c
+Treep copyTree(Treep root)
+{
+    Treep copyroot;
+    if(root == NULL)
+        copyroot = NULL;
+    else {
+        copyroot = (Treep) malloc(sizeof(Tree));
+        copyroot->val = root->val;
+        copyroot->left = copyTree(root->left);
+        copyroot->right = copyTree(root->right);
+    }
+    return copyroot;
+} 
+```
+
+
+
+###### 删除二叉树
+```c
+void destroy(Treep p)
+{
+	if(p!=NULL)
+	{
+		destroy(p->left);
+		destroy(p->right);
+		free(p);
+		p=NULL;
+	}
+ } 
+```
+
+
+
+###### 删除二叉树的一个元素
+```c
+Treep delete_num(Treep t,char num)
+{
+	Treep Stack[200],p=t,q;
+	int top=-1;
+	if(t->val==num)
+	{
+		destroy(t);
+		return NULL;
+	}
+	else
+	{
+		do{
+			while(p!=NULL)
+			{
+				if(p->val==num)
+				{
+					if(q->left==p)	q->left=NULL;
+					else	q->right=NULL;
+					destroy(p);
+					return t;
+				}
+				Stack[++top]=p;
+				q=p;
+				p=p->left;
+			}
+			p=Stack[top--];
+			q=p;
+			p=p->right;
+		}while(!(p==NULL && top==-1));
+	}
+}
+```
+
+
+
+###### 二叉排序树的查找
+```c
+Treep searchBST(Treep t,char num)
+{
+	Treep p=t;
+	while(p!=NULL)
+	{
+		if(p->val==num) return p;
+		if(num<p->val)	p=p->left;
+		else	p=p->right;
+	}
+	return NULL;
+} 
+```
+
+
+
+###### 由前序遍历和中序遍历恢复二叉树
+```c
+struct TreeNode* buildTree(int* preorder, int preorderSize, int* inorder, int inorderSize){
+    int p=0,i=0;
+    struct TreeNode* newNode;
+    if(preorder == NULL || inorder == NULL) return NULL;
+    if(preorderSize <= 0 || inorderSize <= 0 )  return NULL;
+    newNode=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+    newNode->val=preorder[p];
+    newNode->left=newNode->right=NULL;
+    for(i=0;i<inorderSize;i++)
+        if(newNode->val == inorder[i])
+        {
+            newNode->left=buildTree(preorder+1,i,inorder,i);
+            newNode->right=buildTree(preorder+i+1,preorderSize-i-1,inorder+i+1,inorderSize-i-1);
+        }
+    return newNode;
+}
+```
+
+
+
+###### 由中序遍历和后序遍历恢复二叉树
+```c
+struct TreeNode* buildTree(int* inorder, int inorderSize, int* postorder, int postorderSize){
+    int p=postorderSize-1,i=0;
+    struct TreeNode* newNode;
+    if(postorder == NULL || inorder == NULL) return NULL;
+    if(postorderSize <= 0 || inorderSize <= 0 )  return NULL;
+    newNode=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+    newNode->val=postorder[p];
+    newNode->left=newNode->right=NULL;
+    for(i=0;i<inorderSize;i++)
+        if(newNode->val == inorder[i])
+        {
+            newNode->left=buildTree(inorder,i,postorder,i);
+            newNode->right=buildTree(inorder+i+1,inorderSize-i-1,postorder+i,postorderSize-i-1);
+        }
+    return newNode;
+
+}
+```
+
+
+
+###### 二叉树的任意两点的最近公共祖先
+```c
+struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p, struct TreeNode* q) {
+    if( root == NULL || root == p || root == q)  return root;
+    struct TreeNode* left = lowestCommonAncestor(root->left, p , q);
+    struct TreeNode* right = lowestCommonAncestor(root->right, p , q);
+    if(left != NULL && right != NULL)   return root;
+    return (left != NULL) ? left : right;
+}
+```
+
+
+
+###### N叉树的最大深度
+```c
+int max(int x,int y)
+{
+    return x>y?x:y;
+}
+int maxDepth(struct Node* root) {
+    int i,depth=0;
+    if(root==NULL)  return 0;
+    for(i=0;i<root->numChildren;i++)
+    {
+        depth=max(depth,maxDepth(root->children[i]));
+    }
+    return depth+1;
+}
+```
+
+
+
+###### N叉树的直径
+```c
+int ans;
+int Depth(struct Node *root)
+{
+    int max=0,sec=0,i,j;
+    for(i=0;i<root->numChildren;i++)
+    {
+        j=Depth(root->children[i])+1;
+        if(j>max)
+        {
+            sec=max;
+            max=j;
+        }
+        else if(j>sec)  sec=j;
+    }
+    ans=ans > (max + sec) ? ans : (max + sec);
+    return max;
+}
+int diameter(struct Node* root) {
+    ans=0;
+    Depth(root);
+    return ans;
+}
+```
+

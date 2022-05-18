@@ -1,0 +1,250 @@
+# 树算法
+
+[TOC]
+
+
+
+###### 树结构的初始化
+struct  node {
+          int   data;
+          struct  node   *lchild,  *rchild;
+};
+typedef struct node  BTNode;
+typedef struct node  *BTNodeptr;
+
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+ };
+
+###### 前序遍历二叉树
+void  preorder(BTNodeptr t)
+{
+      if(t!=NULL){
+             VISIT(t);      // 访问t指的结点 
+             preorder(t->lchild);
+             preorder(t->rchild);
+       }
+}
+
+###### 中序遍历二叉树
+void  inorder(BTNodeptr t)
+{
+      if(t!=NULL){
+             inorder(t->lchild);
+             VISIT(t);     // 访问t指的结点 
+             inorder(t->rchild);
+       }
+}
+###### 后序遍历二叉树
+void  postorder(BTNodeptr t)
+{
+      if(t!=NULL){
+             postorder(t->lchild);
+             postorder(t->rchild);
+             VISIT(t); // 访问t指的结点 
+      }
+}
+###### 遍历二叉树
+void  layerorder(BTNodeptr t)
+{
+      BTNodeptr  p;
+      if(t!=NULL){
+           enQueue(t);
+           while(!isEmpty()){                      
+                 p=deQueue(); 
+                 VISIT(p);                              
+                 if(p->lchild!=NULL)           
+                         enQueue(p->lchild);
+                 if(p->rchild!=NULL)           
+                         enQueue(p->rchild);
+           }
+      }
+}
+###### 前序遍历的非递归算法
+void  inorder (BTNodeptr t)
+{
+     BTNodeptr STACK[M], p=t;
+     int top=-1;
+     if(t!=NULL)  
+         do {
+               while(p!=NULL){
+	     VISIT(p);
+                     STACK[++top]=p;
+                     p=p->lchild;
+              }
+              p=STACK[top– –];
+              p=p->rchild;
+         }  while(!(p==NULL && top==-1));
+ }
+###### 中序遍历的非递归算法
+void  inorder (BTNodeptr t)
+{
+     BTNodeptr STACK[M], p=t;
+     int top=-1;
+     if(t!=NULL)  
+         do {
+               while(p!=NULL){
+                     STACK[++top]=p;
+                     p=p->lchild;
+              }
+              p=STACK[top– –];
+              VISIT(p);
+              p=p->rchild;
+         }  while(!(p==NULL && top==-1));
+ }
+###### 后序遍历的非递归算法
+void  inorder (BTNodeptr t)
+{
+     BTNodeptr STACK[M], p=t;
+     int top=-1;
+     if(t!=NULL)  
+         do {
+               while(p!=NULL){
+                     STACK[++top]=p;
+                     p=p->lchild;
+              }
+              p=STACK[top– –];
+              p=p->rchild;
+              VISIT(p);
+         }  while(!(p==NULL && top==-1));
+ }
+###### 二叉树拷贝，类似前序遍历
+BTNodeptr  copyTree(BTNodeptr  src)
+{
+    BTNodeptr obj;
+    if(src == NULL)
+        obj = NULL;
+    else {
+        obj = (BTNodeptr) malloc(sizeof(BTNode));
+        obj->data = src->data;
+        obj->lchild = copyTree(src->lchild);
+        obj->rchild = copyTree(src->rchild);
+    }
+    return obj;
+}
+###### 二叉树删除，类似后序遍历
+void  destoryTree(BTNodeptr  p)
+{
+    if(p != NULL)
+    {
+         destoryTree(p->lchild);
+         destoryTree(p->rchild);
+         free(p);
+         p = NULL; 
+    }
+}
+###### 计算二叉树的高度
+int max(x,y) 
+{ if((x >y)  return x; else return y; }
+int  heightTree(BTNodeptr  p)
+{
+    if(p == NULL)
+        return 0;
+    else
+        return 1 + max(heightTree(p->lchild), 
+                                 heightTree(p->rcihld));
+ }
+
+#### 树的遍历
+###### 初始化
+#define MAXD  3   //树的度
+struct  node{
+          int data;
+          struct  node   *next[MAXD];
+ };
+typedef struct node  TNode;
+typedef struct node  *TNodeptr;
+###### 深度优先遍历算法
+void  DFStree(TNodeptr t)
+{
+      int i;
+      if(t!=NULL){
+            VISIT(t);       /* 访问t指向结点  */
+             for(i=0;i<MAXD; i++)
+                     if(t->next[i] != NULL)
+                          DFStree(t->next[i]);
+      }
+}
+###### 广度优先遍历算法
+void  BFStree(TNodeptr t)
+{
+      TNodeptr p;  int i;
+      if(t!=NULL){
+            enQueue(t);
+            while(!isEmpty()){                      /* 若队列不空 */
+                 p= deQueue(); 
+                 VISIT(p);    
+                 for(i=0; i<MAXD; i++)             /* 依次访问p指向的子结点 */
+                       if( p->next[i] != NULL)   
+                            enQueue(p);
+             }
+       }    
+}
+
+#### 二叉查找树的构建
+###### 初始化
+#include <stdio.h>
+struct node {
+    int data;
+    struct node *lchild, *rchild;
+};
+typedef struct node BTNode, *BTNodeptr;
+BTNodeptr  insertBST(BTNodeptr p, Datatype item)
+int main()
+{
+    int i, item;
+    BTNodeptr  root=NULL;
+    for(i=0; i<10; i++){ //构造一个有10个元素的BST树
+         scanf(“%d”, &item);
+         root = insertBST(root, item);
+     }
+    return 0;
+}
+###### 二叉查找树的递归算法
+BTNodeptr  insertBST(BTNodeptr p, Datatype item)
+{
+    if(p == NULL){
+        p = (BTNodeptr)malloc(sizeof(BTNode));
+        p->data = item;
+        p->lchild = p->rchild = NULL;
+    } 
+    else if( item < p->data)
+        p->lchild = insertBST(p->lchild, item);
+    else if( item > p->data)
+       p->rchild = insertBST(p->rchild,item);
+    else   
+       do-something; //树中存在该元素
+    return p;
+} 
+###### 二叉查找树的非递归算法
+BTNodeptr  Root=NULL; //Root是一个全局变量
+void  insertBST( Typedata item) {
+	BTNodeptr p, q;
+	p=(BTNodeptr)malloc(sizeof(BTNode));
+	p->data=item;
+	p->lchild=NULL;
+	p->rchild=NULL;
+	if(Root==NULL)
+		Root=p;
+	else {
+		q=Root;
+		while(1)
+			/* 比较值的大小 */
+			/* 小于向左，大于向右 */
+			if(item<q->data)  {
+				if(q->lchild==NULL) {
+					q->lchild=p;
+					break;
+				} else
+					q=q->lchild;
+			} else {
+				if(q->rchild==NULL) {
+					q->rchild=p;
+					break;
+				} else
+					q=q->rchild;
+			}
+	}
+}

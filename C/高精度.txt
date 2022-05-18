@@ -1,0 +1,332 @@
+# 高精度算法
+
+
+
+[TOC]
+
+
+
+###### 高精度减法(高除以低)
+
+```c
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include<stdlib.h>
+#include<ctype.h>
+#define M 100
+void front0(char *p0);   //删去前导零 
+char s[M],ss[M];
+int a[M],b[M];
+int len,i; 
+int main()
+{
+    scanf("%s%s",s,ss);
+    front0(s);
+    front0(ss);
+    int l1 = strlen(s);  
+    int l2 = strlen(ss);
+    int flag = 0;         
+    memset(a,0,sizeof(a));  
+    memset(b,0,sizeof(b));  
+    if ( l1 < l2 || (strcmp(s,ss) < 0 && l1 == l2) )   //找到较大的那个字符串   
+    {                                          
+        flag = 1; 
+        for (i = l2 - 1 ; i >= 0 ; i--)    
+            a[l2 - i - 1] = ss[i] - '0';    //转化为数字 
+        for (i = l1 - 1 ; i >= 0 ; i--)		
+            b[l1 - i - 1] = s[i] - '0';		//转化为数字
+    }
+    else
+    {
+        for (i = l1 - 1 ; i >= 0 ; i--)  	//转化为数字
+            a[l1 - i - 1] = s[i] - '0';
+        for (i = l2 - 1 ; i >= 0 ; i--)
+            b[l2 - i - 1] = ss[i] - '0';	//转化为数字
+    }
+    if (l1 > l2)
+	{
+		len = l1;
+	}                
+    else
+	{
+		len = l2;
+	}  
+    for (i = 0 ; i < len ; i++)
+    {
+        a[i] = a[i] - b[i];     //模拟减法 
+        if (a[i] < 0)         
+        {
+            a[i+1]-=1;          //借位 
+            a[i]+=10;          
+        }
+    }
+
+    while (a[len - 1] == 0 && len>1)
+    {
+    	len--;   //删去减法中出现的前导零 
+    } 
+    if (flag == 1) 
+    {
+    	printf("-");
+    }     
+    for (i = len - 1 ;i >= 0 ;i--)
+    {
+    	printf("%d",a[i]);
+    }  
+       
+    printf("\n"); 
+    
+    return 0;
+
+}
+void front0(char *p0){ //删去前导零 
+	char tmp[M];
+	int i;
+	for(i=0;i<strlen(p0);i++){
+		if(*(p0+i)!='0') break;
+	}
+	strcpy(tmp,p0+i);         
+	strcpy(p0,tmp);
+}
+```
+
+###### 高精度除法（高除以高）
+
+```c
+#include <stdio.h>  
+#include <string.h>  
+  
+int len1,len2;  
+char s1[90005],s2[90005];  
+int re[90005];  
+  
+void sub()  
+{  
+    int i=0,j;  
+    while(1)  
+    {  
+        if(s1[i]=='0')  i++;  
+        else  
+        {  
+            j=i;  
+            break;  
+        }  
+    }  
+    for(;i<len2;i++)  
+        s1[i]=s1[i]-s2[i]+'0';  
+    for(i=len2-1;i>j;i--)            //低位开始检测是否小于0  
+        if(s1[i]<'0')  
+        {  
+            s1[i]+=10;  
+            s1[i-1]--;  
+        }  
+}  
+  
+int main()  
+{  
+    int i,p;  
+    scanf("%s%s",s1,s2);   
+    len1=strlen(s1);  
+    len2=strlen(s2);  
+    if(len1<len2 || (len1==len2 && strncmp(s1,s2,len2)<0))   //如果a<b,直接输出0  
+        printf("0\n");   
+    p=0;  
+    while(1)  
+    {  
+        re[p]=0;  
+        while(strncmp(s1,s2,len2)>=0)      //一直进行减法，直到不能减为止  
+        {  
+            sub();  
+            re[p]++;  
+        }  
+        p++;  
+        if(len1==len2)  break;  
+        for(i=len2-1;i>=0;i--)             //在s2前面补0，以便进行减法运算  
+            s2[i+1]=s2[i];   
+        s2[0]='0';  
+        len2++;  
+        s2[len2]='\0';  
+    }  
+    i=0;  
+    while(1)  
+    {  
+        if(re[i]==0)    i++;  
+        else            break;  
+    }  
+    for(;i<p;i++)  
+        printf("%d",re[i]);  
+    return 0;  
+}
+```
+
+
+
+###### 高进度加法
+
+```c
+#include<stdio.h>
+#include<string.h>
+char s[10100],ss[10100];
+int a[10100],b[10100];
+int len;
+
+void jia()     //自定义函数"jia"(名字low了一点（好像不是一点，但容易理解不是吗）) 
+{
+	int l1 = strlen(s);     //"strlen"是一个计算字符串长度的函数 
+	int l2 = strlen(ss);    //将输入的两个字符串的长度赋值给l1,l2
+	if (l1 > l2) 
+		len = l1;      //将len赋值为l1,l2中大的那个 
+	else 
+		len = l2;
+//		for (int i = 0 ; i <= len ; i++)  //清零（这里for循环和下面三句memset都为将字符串清零 ） 
+//			a[i] = b[i] = c[i] = 0;
+	memset(a,0,sizeof(a));    //清零too(只能清零，不能干别的) 
+	memset(b,0,sizeof(b));    //这是清零函数（字符串） 
+	                                       //两个for循环是将输入的两个字符串倒过来
+	for (int i = l1 - 1 ; i >= 0 ; i--)    //再将字符串里的字符转换为数字赋值给a,b整型数组 
+		a[l1 - i - 1] = s[i] - '0';        //但为什么大数要用字符串存呢？
+	for (int i = l2 - 1 ; i >= 0 ; i--)    //因为大数太大，用任何整型变量都存不下 
+		b[l2 - i - 1] = ss[i] - '0';       //为什么要把字符串倒过来赋值呢？ 
+	                                //因为大数与大数是一位一位运算的，还要涉及进位等 
+	for (int i = 0 ; i < len ; i++)
+	{
+		a[i] = a[i] + b[i];    //运算 
+		a[i+1]+= a[i] / 10;    //如有进位，在后一位上加上 
+		a[i] = a[i] % 10;      //原来那一位减掉进位了的 
+	}
+	if (a[len] != 0) len++;    //如果有进位就多显示一位（这句话很重要） 
+
+	while (a[len - 1] == 0 && len>1) len--;		//我叫它while去零法
+		
+	for (int i = len - 1 ;i >= 0 ;i--)  //输出结果 
+		printf("%d",a[i]);
+	printf("\n");
+
+}                              //高精度加法你懂了吗？
+
+int main()
+{
+	scanf("%s%s",s,ss);
+	
+
+		jia();     //引用高精度加法函数
+	
+	return 0;
+
+}
+```
+
+###### 高精度除法（低）
+
+```c
+#include<stdio.h>
+#include<string.h>
+char s[1000000];
+int a[1000000],b[1000000];
+int len,lenb;
+int d,yu;
+	
+
+void chu_di()       //高精除低精 
+{
+	int yu=0;
+	memset(a,0,sizeof(a));    //清空数组a 
+	memset(b,0,sizeof(b));
+	len=strlen(s);            //s的长度 
+	for(int i=0;i<=len-1;i++)
+		a[i+1]=s[i]-'0';
+	for(int ii=1;ii<=len;ii++)
+	{
+		b[ii]=(yu*10+a[ii])/d;
+		yu=(yu*10+a[ii])%d;
+	}
+	int lenb=1;
+	while(b[lenb]==0&&lenb<len)
+		lenb++;
+	printf("结果：\n");
+	printf("%s ÷ %d = ",s,d);
+	for(int j=lenb;j<=len;j++)
+		printf("%d",b[j]);
+	if(yu!=0)
+		printf("......%d",yu);
+	printf("\n");       
+}                               //高精度除法（高）你懂了吗
+
+int main()
+{
+
+	while (scanf("%s%d",s,&d)!=EOF)
+	{
+	    chu_di();  
+	}
+	return 0;
+
+}
+
+
+```
+
+###### 高精度乘法
+
+```c
+#include <stdio.h>
+#include <string.h>
+char s[10000],ss[10000];
+int a[10000],b[10000],c[10000];
+int len,lenn;
+
+/*-------------高精度乘法（高）--------------*/	
+void cheng_gao()     //高是指高精度乘高精度 
+{
+	len = strlen(s);
+	lenn = strlen(ss);
+	memset(a,0,sizeof(a));   //清零数组
+	memset(b,0,sizeof(b));
+	memset(c,0,sizeof(c));	
+	for (int i = 0 ; i < len ; i++)
+		a[len - i - 1] = s[i] - '0';    //将字符串转化为数组 
+	for (int i = 0 ; i < lenn ; i++)
+		b[lenn - i - 1] = ss[i] - '0';
+		
+
+	memset(c,0,sizeof(c));   //清零 
+	for (int i = 0 ; i < len ; i++)
+		for (int j = 0 ; j < lenn ; j++)
+			c[i + j] += a[i] * b[j];       //运算（这个就有一点复杂了） 
+		
+	int l = len + lenn - 1;    //l是结果的最高位数 
+	for (int i = 0 ; i < l ;i++)
+	{
+		c[i + 1] += c[i] / 10;    //保证每一位的数都只有一位，并进位 
+		c[i] %= 10;
+	}
+	if (c[l] > 0) l++;     //保证最高位数是对的 
+	while (c[l - 1] >= 10)
+	{
+		c[l] = c[l - 1] / 10;
+		c[l - 1] %= 10;
+		l++;
+	}
+	while (c[l - 1] == 0 && l > 1) 
+		l--;    //while去零法 
+	for (int i = l - 1; i >= 0 ; i--)    //输出结果 
+		printf("%d",c[i]);
+	printf("\n");     //换行 
+
+}                               //高精度乘法（高）你懂了吗
+
+
+
+int main()
+{
+	int t;
+
+
+	    scanf("%s%s",s,ss);
+	    cheng_gao();    //引用高精度乘法函数
+	
+	return 0;
+
+}
+```

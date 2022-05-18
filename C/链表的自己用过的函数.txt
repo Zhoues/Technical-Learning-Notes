@@ -1,0 +1,148 @@
+# 链表算法
+
+
+
+[TOC]
+
+
+
+###### 基础框架
+
+```c
+struct node{
+	int data;
+	struct node *next;
+};
+typedef struct node Node;
+typedef struct node *Nodep;
+Nodep head=NULL,p,t,q;
+//初始化
+if(head == NULL)
+	{
+		p=(struct node *)malloc(sizeof(struct node ));
+		head = p;
+	}
+    else
+	{
+        p->next =(struct node *)malloc(sizeof(struct node));
+        p = p->next;
+    }
+	p->data=a;
+	p->next=NULL;
+```
+
+
+###### 在链表中顺序插入一个数
+
+```c
+void insert(int a)
+{
+	t=head;
+		while(t !=NULL)
+		{
+			if(head->data>a)
+			{
+				p=(struct node*)malloc(sizeof(struct node));
+				p->data=a;
+				p->next=head;
+				head=p;
+				break;
+			}
+			else if (t->next==NULL || t->next->data>a)
+			{
+				p=(struct node*)malloc(sizeof(struct node));
+				p->data=a;
+				p->next=t->next;
+				t->next=p;
+				break;
+			}
+			t=t->next;
+		}
+}
+```
+
+###### 在链表中删除一个数
+
+```c
+void deleteNode( int a )
+{
+	Nodep r,p;
+	r=p=head;
+	if(a==head->data)
+	{
+		p=head;
+		head=head->next;
+		free(p);
+	}
+	else
+	{
+		for(r=head;r->next->data!=a && r->next!=NULL;r=r->next) ;
+		if(r->next!=NULL)
+		{
+			p=r->next;
+			r->next=r->next->next;
+			free(p);
+		}
+	}
+}
+```
+
+###### 链表倒置
+
+```c
+Nodep reverseList(Nodep head)
+{
+    if (head == NULL) {
+        return NULL;
+    }
+    Nodep pre = head;
+    Nodep cur = head->next;
+    Nodep temp = NULL;
+    while (cur != NULL) {
+        // temp记录的是cur的next指针，这个很重要
+        temp = cur->next;
+        // 拆除原有的指向关系
+        cur->next = pre;
+        // pre和cur后移
+        pre = cur;
+        cur = temp;
+    }
+    // 最后记得head->next要置空
+    head->next = NULL;
+    return pre;
+}
+```
+
+
+###### 倒数第k个结点（快慢指针）
+
+```c
+Nodep  getKthFromEnd(Nodep  head, int k){
+    Nodep  first = head;
+    Nodep  last = head;
+    for(int i = 1; i < k ;i++)
+        first = first->next;
+    while(first->next)
+    {
+        first = first->next;
+        last=last->next;
+    }
+    return last;
+}
+```
+
+###### 获取线性表的长度
+
+```c
+int getLength( Nodep head);                         //获取线性表的长度；
+{
+	Nodep p;
+	int n=0;
+	for(p=head ;p!=NULL;p=p->next)
+	{
+		n++;
+	}
+	return n;
+} 
+```
+
