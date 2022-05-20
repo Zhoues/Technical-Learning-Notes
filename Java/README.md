@@ -660,7 +660,7 @@ try{
 
 ```java
 /* 创建对象 */
-FileIutputStream fis = new FileIutputStream(String name);
+FileInputStream fis = new FileInputStream(String name);
 FileOutputStream fos = new FileOutputStream(String name);
 /* 读写数据 */
 byte[] bys = new byte[1024];
@@ -766,8 +766,8 @@ FileWriter	-----  OutputStreamWriter
 - `public String readLine()`:	读一行文字。结果包含的行的内容的字符串，不包括任何终止字符，如果流的结尾已经到达，则为`null`
 
 ```java
-BufferedReader br = new BufferedReader(new FileReader())
-BufferedWriter bw = new BufferedWriter(new FileWriter())
+BufferedReader br = new BufferedReader(new FileReader());
+BufferedWriter bw = new BufferedWriter(new FileWriter());
 String line;
 while((line = br.readLine()) != null){
 	bw.write(line);
