@@ -902,3 +902,61 @@ synchronized(obj){
 
 - 格式：
   - 修饰符 synchronized 返回值类型 方法名(方法参数){		}
+
+同步方法的锁对象是什么————**this**
+
+同步静态方法的锁对象是什么呢————**类名.class**
+
+
+
+### 线程安全类
+
+StringBuffer
+
+- 线程安全，可变的字符序列
+- 通常使用StringBuilder类，因为它支持所有相同的操作，但它更快，因为它不同步
+
+Vector
+
+- 线程安全
+- 如果不需要线程安全，建议使用ArrayList代替Vector
+
+Hashtable
+
+- 线程安全
+- 如果不需要线程安全，建议使用HashMap代替Hashtable
+
+
+
+### Lock锁
+
+Lock实现提供比使用synchronized方法和语句可以获得更广泛的锁定操作
+
+Lock中提供了获得锁和释放锁的方法：
+
+- void lock()：获得锁
+- void unlock()：释放锁
+
+```java
+private Lock lock = new ReentrantLock();
+
+try{
+    lock.lock();
+    ...
+} finally{
+    lock.unlock();
+}
+```
+
+### 生产消费者
+
+为了体现生产和消费过程中的等待和唤醒，Java就提供了几个方法供我使用，这几个方法在Object类中
+
+Object类的等待和唤醒方法：
+
+| 方法名           | 说明                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| void wait()      | 导致当前线程等待，直到另一个线程调用该对象的notify()方法或者notifyAll()方法 |
+| void notify()    | 唤醒正在等待对象监视器的单个线程                             |
+| void notifyAll() | 唤醒正在等待对象监视器的所用线程                             |
+
