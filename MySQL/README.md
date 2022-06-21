@@ -853,7 +853,7 @@ mysql 中默认是第三个级别		repeatable read
 
 #### SQL指令执行过程
 
-![1](C:\Users\这是恩申的哟\Desktop\framework\SQL\picture\1.png)
+![1](C:\Users\这是恩申的哟\Desktop\Technical-Learning-Notes\MySQL\picture\1.png)
 
 从SQL执行的流程中我们分析存在的问题：如上图黄字所示
 

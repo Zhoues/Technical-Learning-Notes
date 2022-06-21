@@ -3,4 +3,10 @@ import matplotlib
 import sklearn
 import pandas
 
-print("Hello Machine Leaning!")
+
+def hello(name):
+    print("Hello", name, "!")
+
+
+hello("ML")
+
