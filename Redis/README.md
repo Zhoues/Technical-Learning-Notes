@@ -131,6 +131,8 @@ key命名原则
 
 
 
+**应用：验证码**
+
 ### 常用命令
 
 - set key value nx ex
@@ -218,7 +220,7 @@ key命名原则
 4. 最多可包含2^32-1个元素
 5. 索引同python列表
 
-
+**应用场景：生产者消费者模型——邮件发送队列**
 
 ### 常用命令
 
@@ -272,18 +274,427 @@ key命名原则
 - LSET key index newvalue
   - 设置list指定索引的值
 
+## 位图
+
+**应用：统计用户上线天数**
+
+- SETBIT key offset value
+  - 修改某个位置上的二进制值
+  - 参数
+    - offset	-	偏移量	从0开始
+    - value     -    0或者1
+- GET key offset
+  - 获取某一位上的值
+
+- BITCOUNT  sey start end
+  - 统计键所对应的值中有多少个1
+  - 参数
+    - start/end 代表的是字节索引
+
+## 哈希
+
+就是一个小字典
+
+1. 由field和关链的value组成的键值对
+2. field和value是字符串类型
+3. 一个hash中最多包含2^32-1个键值对
+
+优点：
+
+1. 节约内存空间-特定条件下【1. 字段小于512 	2. value不能超过64字节】
+2. 可按需获取字段的值
+
+缺点（不适合hash情况）
+
+1. 使用过期键功能：键过期功能只能对键进行过期操作，而不能对散列的字段进过期操作
+2. 存储消耗大于字符串结构
+
+
+
+**应用：缓存个人信息**
+
+### 常用命令
+
+- HSET key field value
+- HSETNX key field value
+  - 设置单个字段
+- HMSET key field value field value
+  - 设置多个字段
+- HLEN key
+  - 返回字段个数
+
+
+
+- HGETALL key
+  - 返回该键值对应的结构
+
+
+
+- HKEYS key
+  - 返回所有字段名
+- HVALS key
+  - 返回所有值
+- HDEL key field
+  - 删除指定字段
+- HINCRBY key field increment
+- HINCRBYFLOAT key field increment
+  - 在字段对应值上进行整数增量运算
+
+
+
+## 集合
+
+1. 无序、去重
+2. 元素是字符串类型
+3. 最多包含2^32-1个元素
+
+**应用：**
+
+1. **社交类平台：共同好友——交集**
+2. **纯随机类抽奖**
+3. **防止元素重复**
+4. **黑/白名单**
+
+### 常用命令
+
+- SADD key member1 member2
+  - 添加一个或者多个元素，自动去重
+  - 返回值为成功插入到集合的元素个数
+- SEMEBERS key
+  - 查找集合中所有的元素
+
+- SREM key member1 member2
+  - 删除一个或者多个元素，元素不存在自动忽略
+
+
+
+- SISMEMBER key member
+  - 元素是否存在
+- SRANDMEMBER key [count]
+  - 随机返回集合中指定个数的元素，默认为1个
+- SPOP key [count]
+  - 弹出成员
+- SCARD key
+  - 返回集合中元素的个数
+
+
+
+- SMOVE source destination member
+  - 把元素从源集合移动到目标集合
+- SDIFF key1 key2
+  - 差集（number1   123     number2    124 结果为3）
+- SDIFFSTORE destination key 1 key 2
+  - 差集保存到另一个集合中
+
+
+
+- SINTER key1 key2
+- SINTERSTORE destination key 1 key 2
+  - 交集
+
+- SUNION key1 key2
+- SUNION STORE destination key 1 key 2
+  - 并集
+
+
+
+## 有序集合
+
+1. 有序、去重
+2. 元素是字符串类型
+3. 每个元素都关联着一个浮点数分值（score）,并按照分值从小到达的顺序排序集合中的元素（分值可以相同）
+4. 最多包含2^32-1个元素
+
+
+
+### 常用命令
+
+- ZADD key score member
+  - 在有序集合中添加一个成员 
+  - 返回值：成功插入到集合中的元素个数
+
+- ZRANGE key start stop [withscores]
+  - 查看指定区间元素（升序）
+- ZREVRANGE key start stop [withscores]
+  - 查看指定区间元素（降序）
+
+- ZSCORE key member
+  - 查看指定元素的分值
+
+- ZRANK key member
+  - 查看排名（从0开始）（升序）
+
+- ZREVRANK key member
+  - 查看排名（从0开始）（降序）
+
+
+
+- ZRANGEBYSCORE key min max [withscores] [limit offset count]
+  - 参数说明：
+    - min/max：最小值/最大值区间，默认闭区间（大于等于或者小于等于）
+      - (min：可开启开区间即（大于或小于）
+    - offset：跳过多少元素
+    - count：返回几个
+    - limit：选项和mysql一样
+
+
+
+- ZREM key member
+  - 删除成员
+- ZINCRBY key increment member
+  - 增加或者减少分值
+- ZREMRANGEBYSCORE key min max
+  - 删除指定区间内的元素（默认闭区间，可做开区间）
+- ZCARD key
+  - 返回集合元素中的个数
+- ZCOUNT key min max
+  - 返回指定范围中元素的个数（默认闭区间，可做开区间）
+
+
+
+- ZUNIONSTORE destination numkeys key1 key2 [weights weight] AGGREGATE [SUM|MIN|MAX]
+
+  - 并集
+  - 参数
+    - numkeys：参与合并的有序集合个数
+    - weights：参与合并的有序集合的权重
+    - AGGREGATE：聚合方式
+
+- ZINTERSTORE destination numkeys key1 key2 [weights weight] AGGREGATE [SUM|MIN|MAX]
+
+  - 交集
+
+  
+
+
+
+# 事务
+
+redis 是弱事务型的数据库，并不具备ACID的全部特性
+
+redis具备隔离性：事务中的所有命令会被序列化，按顺序执行，在执行过程中不会被其他客户端发送来的命令打断
+
+不保证原子性：redis中的一个事务中如果存在命令执行失败，那么其他命令依然会被执行，没有回滚机制
+
+## 基本命令
+
+1. MULTI	开启事务
+2. 命令1……
+3. 命令2……
+4. EXEC     提交到数据库执行
+5. DISCARD    取消事务
+
+
+
+# 数据持久化
+
+## RDB
+
+1. 保存真实的数据
+2. 将服务器包含的所有数据库数据以二进制文件的形式保存到硬盘里面
+3. 默认文件名：`/var/lib/redis/dump.rdb`
+4. 文件名及目录可在配置文件中修改【`/etc/redis/redis.conf`】
+   1. 263行：`dir /var/lib/redis` 表示rdb文件存放路径
+   2. 253行：`dbfilename dump.rdb` 文件名
+
+### 触发方式
+
+#### 方式一：redis终端中使用SAVE或者BGSAVE命令
+
+特点：
+
+1. 执行SAVE命令过程中，redis服务器将被堵塞，无法处理客户端发送的命令请求，在SAVE命令执行完毕之后，服务器才会重新开始处理客户端发送的命令请求
+2. 如果EDB文件已经存在，那么服务器将会自动使用新的RDB文件替代旧的RDB文件
+
+
+
+BGSAVE执行流程如下：
+
+1. 客户端发送 BGSAVE 给服务器
+2. 服务器马上返回 Background saving started 给客户端
+3. 服务器 fork() 子进程做这件事
+4. 服务器继续提供服务
+5. 子进程创建完RDB文件后再告知Redis服务器
+
+
+
+SAVE 比 BGSAVE快，因为需要创建子进程，消耗额外的内存
+
+说明：可以通过查看日志文件来查看redis的持久化过程
+
+logfile位置：`/var/log/redis/redis-server.log`
+
+
+
+#### 方式二：自动触发SAVE或者BGSAVE
+
+218行：`save 300 10`
+
+表示如果距离上一次创建EDB文件已经过去了300s，并且服务器的所有数据库总共已经发生了不少于10次的修改，你们自动执行BGSAVE命令
+
+每次创建RDB文件之后，服务器为实现自动持久化而设置的时间计数器和次数计数器就会被清零，并重新考试计数，所以多个保存条件的效果不会叠加
+
+
+
+#### 方式三：自动关闭redis
+
+
+
+## AOF
+
+1. 存储的是命令，而不是真实的数据
+2. 默认不开启
+
+
+
+**开启方式：修改配置文件**
+
+1. `/etc/redis/redis.conf`
+   1. 672 行：appendonly yes     把no改成yes
+   2. 676行： appendfilename "appendonly.aof"
+2. 重启服务 `sudo /etc/init.d/redis-server restart`
+
+
+
+**执行原理**：
+
+1. **每当有修改数据库的命令被执行时发生**
+2. 因为AOF文件里面存储了服务器执行过的所有数据库修改的命令，所以给定一个AOF 文件，服务器只需要重新执行一遍AOF文件里面包含的所有命令，就可以达到还原数据库的目的
+3. 用户可以根据自己的需要对AOF持久化进行调整，让redis再遭遇意外停机的时候不会丢失任何数据，或者只丢失一秒钟的数据，这比RDB持久化丢失的数据要少得多
+
+**特殊说明：**
+
+1. AOF 持久化：当一条命令真正的被写入到磁盘里面时，这条命令才不会应位停机二意外丢失
+2. AOF 持久化再遭遇停机时丢失命令的数量，取决于命令被写入到硬盘的时间
+3. 越早将命令写入到磁盘，发生意外停机时丢失的数据就越少，反之亦然
+
+**干预操作系统配置：**打开配置文件：`/etc/redis/redis.conf`
+
+1. 701行：alwarys
+
+   服务器每写入一条指令，就会将缓冲区里面的命令写入到硬盘里面，服务器就算意外停机，也不会丢失任何已经成功执行的命令数据
+
+2. 702行：everysec   （默认）
+
+​		服务器每一秒将缓冲区里面的命令写入到磁盘里面，这种模式下，服务器及时遭遇意外停机，最多只丢失1s的数据
+
+3. 703行：no
+
+​		服务器不主动将命令写入磁盘，有操作系统决定何时将缓冲区里面的命令写入到磁盘里面，丢失命令数量不确定
+
+
+
+**AOF重写**
+
+由于AOF的文件中有很多冗余命令，系统会自动合并重写
+
+
+
+### 触发AOF重写方式
+
+1. 客户端向服务器发送BGREWRITEAOF命令
+
+2. 修改配置文件让服务器自动执行BGREWRITEAOF命令
+
+   1. auto-aof-rewrite-percentage 100
+
+   2. auto-aof-rewrite-min-size 64mb
+
+      解释：只有当AOPF文件的增量大于100%时才会进行重写，也就是大一倍的时候才会触发
+
+
+
+# 主从复制
+
+高可用——是系统框架设计中必须考虑的因素之一，它通常是指，通过设计减少系统不能提供服务的时间
+
+目标：消除基础架构中的单点故障
+
+- redis单进程单线程模式，如果redis进程挂掉，相关依赖的服务就难以正常服务
+- redis高可用方案——主从搭建 + 哨兵
+
+
+
+
+
 
 
 # 使用pyredis操作redis
 
-## 操作流程
+## 操作数据库
 
-### 建立连接对象
+**和命令行操作基本一致**
 
 ```python
 import redis
 # 创建数据库连接对象
 r = redis.Redis(host='r-2zejdc10y47fr3t4kipd.redis.rds.aliyuncs.com',
                 port=6379, db=0, password='buaa(2021)')
+```
+
+
+
+## 操作事务
+
+### pipeline流水线执行批量操作
+
+**批量执行redis命令，减少通信io**
+
+原理：效仿redis的事务，客户端将多个命令打包，一次性通信发送给redis，可明显降低redis服务的请求数
+
+注意：
+
+1. 此为客户端技术
+2. 如果一组命令中，一个命令需要上个命令的执行结果才可以执行，则无法使用该技术
+
+
+
+```python
+# 创建连接池并连接到 redis
+pool = redis.ConnectionPool(host='',port=6379, db=0, password='')
+r = redis.Redis(connection_pool=pool)
+
+pipe = r.pipeline()
+....
+pipe.execute()
+
+```
+
+
+
+### pipeline流水线执行事务
+
+python操作事务，需要依赖流水线技术
+
+```python
+with r.pipeline(transaction=True) as pipe:
+    pipe.multi()
+	...
+    values = pipe.execute()
+
+```
+
+
+
+### watch 乐观锁
+
+事务过程中，可以对指定key进行监听，命令提交时，若被监听key对应的值未被修改，事务方可提交成功，否则失败
+
+```python
+with r.pipeline(transaction=True) as pipe:
+    while True:
+        try:
+            key = ....
+            pipe.watch(key)
+            value = int(r.get(key))
+            value *= 2
+
+            pipe.multi()
+            r.set(key,value)
+            pipe.execute()
+            break
+        except redis.WatchError:
+            continue
+	return int(r.get(key))
 ```
 
