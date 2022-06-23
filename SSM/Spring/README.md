@@ -219,10 +219,63 @@ DI：依赖注入，就是输入属性
     <!--注入外部bean-->
     <property name="department" ref="employee"></property>
     <!--采用get方法级联赋值-->
-    <property name="department.dname" ref="安保部门"></property>	
+    <property name="department.dname" value="安保部门"></property>	
 </bean>
 <bean id="employee" class="">
     <property name="dname" ref="安保部门"></property>
+</bean>
+```
+
+
+
+#### 注入集合属性（集合内部是基本数据类型）
+
+数组，List，Map
+
+```xml
+<bean id="stu" class="">
+    <property name="array">
+    	<array>
+        	<value>java课程</value>
+            <value>数据结构课程</value>
+        </array>
+    </property>
+    
+    <property name="list">
+    	<list>
+        	<value>java课程</value>
+            <value>数据结构课程</value>
+        </list>
+    </property>
+    
+    <property name="map">
+    	<map>
+        	<entry key="" value=""></entry>
+            <entry key="" value=""></entry>
+        </map>
+    </property>
+    
+    <property name="set">
+    	<set>
+        	<value>java课程</value>
+            <value>数据结构课程</value>
+        </set>
+    </property>
+</bean>
+```
+
+
+
+#### 注入集合属性（集合内部是对象）
+
+```xml
+<bean id="stu" class="">
+    <property name="list">
+    	<list>
+            <ref bean="course1"></value>
+            <ref bean="course2"></value>
+        </list>
+    </property>
 </bean>
 ```
 
