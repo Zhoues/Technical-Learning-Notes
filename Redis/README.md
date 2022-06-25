@@ -600,7 +600,7 @@ logfile位置：`/var/log/redis/redis-server.log`
 
    2. auto-aof-rewrite-min-size 64mb
 
-      解释：只有当AOPF文件的增量大于100%时才会进行重写，也就是大一倍的时候才会触发
+      解释：只有当AOF文件的增量大于100%时才会进行重写，也就是大一倍的时候才会触发
 
 
 
@@ -614,6 +614,101 @@ logfile位置：`/var/log/redis/redis-server.log`
 - redis高可用方案——主从搭建 + 哨兵
 
 
+
+设计模式：
+
+1. 一个redis服务可以又多个该服务的复制品，这个redis服务称为master，其他复制品成为slaves
+2. master会一直将自己的数据更新同步给slaves，保持主从同步
+3. 只有master可以执行写命令，slave只能执行读命令
+
+作用：分担了读的压力（高并发）；提高可用性
+
+原理：从服务器执行客户端发送的读命令，客户端可以连接slaves执行读请求，来降低master的读压力
+
+
+
+## Linux命令实现
+
+命令：`redis-server --slaveof <master-ip> <master-port> --masterauth <master password>`
+
+## Redis命令实现
+
+1. slaveof IP PORT 成为谁的从
+2. slaveof no one 自封为王
+
+
+
+# 哨兵
+
+## 基本概念
+
+1. Sentinel会不断检查Master和Slaves是否正常
+2. 每一个Sentinel可以监控任意多个Master和该Master下的Slaves
+
+
+
+原理：正如其名，哨兵进程定期与redis主从进行通信，当哨兵认为redis主“阵亡”后【通信无返回】，自动将切换工作完成
+
+## 安装和使用哨兵
+
+```shell
+# 1. 安装redis-sentinel
+sudo apt install redis-sentinel
+验证： sudo /etc/init.d/redis-sentinel stop
+
+# 2. 新建配置文件setinel.conf
+port 26379
+sentinel monitor tedu 127.0.0.1 6379 1
+
+# 3. 启动sentinel
+方式一： redis-sentinel sentinel.conf
+方式二： redis-server sentinel.conf --sentinel
+
+# 4. 将master的redis服务终止，查看是否会提上为主
+sudo /etc/init.d/redis-server stop
+
+# 发现提升6381为master，其他两个为从
+```
+
+## 配置文件解读
+
+```shell
+# sentinel监听端口，默认是26379,可以修改
+port 26379
+# 告诉sentinel去监听地址为ip:port的一个master,这里的master-name可以自定义，quorum是一个数字，指明当前有多少个sentinel认为一个master失效时，master才真正失败
+sentinel monitor <master-name> <ip> <redis-port> <quorum>
+
+# 如果master有密码，则需要额外添加该配置
+sentinel auth-pass <master-name> <password>
+
+# master多久失联才认为时不可用了，默认时30s
+sentinel down-after-milliseconds <master-name> <milliseconds>
+```
+
+
+
+
+
+
+
+## 创建配置文件
+
+```shell
+# 每个redis服务，都有1个和他对应的配置文件
+# 两个redis服务
+1. 6379 -> /etc/redis/redis.conf
+2. 6300 -> /home/ubuntu/redis_6300.conf
+
+# 修改配置文件
+vi redis_6300.conf
+slaveof 127.0.0.1 6379
+port 6300
+# 启动redis服务
+redis-server redis_6300.conf
+# 客户端连接测试
+redis-cli -p 6300
+
+```
 
 
 
@@ -697,4 +792,6 @@ with r.pipeline(transaction=True) as pipe:
             continue
 	return int(r.get(key))
 ```
+
+
 
