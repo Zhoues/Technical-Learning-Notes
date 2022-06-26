@@ -222,7 +222,7 @@ DI：依赖注入，就是输入属性
     <property name="department.dname" value="安保部门"></property>	
 </bean>
 <bean id="employee" class="">
-    <property name="dname" ref="安保部门"></property>
+    <property name="dname" value="安保部门"></property>
 </bean>
 ```
 
@@ -278,6 +278,143 @@ DI：依赖注入，就是输入属性
     </property>
 </bean>
 ```
+
+
+
+### 三、将集合注入部分提取出来
+
+**采用util命名空间法**
+
+- 在spring配置文件中引入名称空间util
+
+```xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:util="http://www.springframework.org/schema/util"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+      	 xsi:schemaLocation="http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+  </beans>
+```
+
+- 使用util标签完成list集合进行注入
+
+```xml
+<!-- 1. 提取list集合类型属性进行注入 -->
+<util:list id="bookList">
+	<value>java课程</value>
+    <value>数据结构课程</value>
+</util:list>
+
+<!-- 2. 提取list集合类型属性注入使用 -->
+<bean id="book" class="">
+	<property name="list" ref="bookList"></property>
+</bean>
+```
+
+## IOC操作Bean管理（FactoryBean）
+
+1. Spring有两种类型的bean，一种普通bean，另一种工厂bean(FactoryBean)
+2. 普通bean：在配置文件中，定义bean的类型就是返回类型
+3. 工厂bean：在配置文件中，定义bean的类型可以和返回类型不一样
+   1. 创建类，让这个类作为工厂bean，实现接口 FactoryBean
+   2. 实现接口里面的方法，在实现的方法中定义返回的bean类型
+
+```java
+public class MyBean implements FactoryBean {
+    // 这个时候可以定义返回值类型，此时的返回值的类型就是工厂Bean生产出来的类型，不一定和包管理的类一致
+    @Override
+    public Object getObject() throws Exception {
+        return null;
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return null;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return FactoryBean.super.isSingleton();
+    }
+}
+```
+
+## IOC操作Bean管理（Bean的作用域）
+
+1. 在Spring里面，可以创建bean实例是单实例还是多实例
+2. 在Spring里面，默认情况下，bean是单实例对象
+
+
+
+**如何设置单实例还是多实例**
+
+1. 在spring配置文件bean标签里面有属性(scope)用于设置单实例还是多实例
+2. scope属性值
+
+第一个值  默认值，singleton，表示单实例对象
+
+第二个值 prototype，表示的是多实例对象。设置scope的值是prototype的时候，不是加载spring配置文件时候创建对象，在调用getBean方法时候创建多实例对象
+
+
+
+## IOC操作Bean管理（Bean的生命周期）
+
+生命周期：从对象创建到对象销毁的过程
+
+
+
+**bean 生命周期**
+
+1. 通过构造器创建bean实例（无参数构造）
+2. 为bean的属性设置值和对其他bean引用（调用set方法）
+3. 调用bean的初始化的方法（需要进行配置）
+4. bean可以使用了（对象获取到了）
+5. 当容器关闭的时候，调用bean的销毁的方法（需要进行配置销毁的方法）
+
+```xml
+<bean id="orders" class="" init-method="initMethod" destroy-method="dstroyMethod">
+	<property name="oname" value="手机"></property>
+</bean>
+```
+
+
+
+如果添加bean后置处理器有七步
+
+1. 通过构造器创建bean实例（无参数构造）
+2. 为bean的属性设置值和对其他bean引用（调用set方法）
+3. 把bean实例传递给bean后置处理器的方法——postProcessBeforeIntialization
+4. 调用bean的初始化的方法（需要进行配置）
+5. 把bean实例传递给bean后置处理器的方法——postProcessAfterIntialization
+6. bean可以使用了（对象获取到了）
+7. 当容器关闭的时候，调用bean的销毁的方法（需要进行配置销毁的方法）
+
+实现java后置处理器接口
+
+```java
+import org.springframework.beans.factory.config.BeanPostProcessor;
+
+public class MyBeanPost implements BeanPostProcessor {
+
+    @Override
+    public java.lang.Object postProcessBeforeInitialization(java.lang.Object bean, java.lang.String beanName) throws org.springframework.beans.BeansException { 
+        return null;
+    }
+    @Override
+    public java.lang.Object postProcessAfterInitialization(java.lang.Object bean, java.lang.String beanName) throws org.springframework.beans.BeansException { 
+        return null;
+    }
+}
+```
+
+## IOC操作Bean管理（xml自动注入）
+
+自动装配：根据指定装配规则（属性名称或者属性类型），Spring自动将匹配属性值进行注入
+
+
+
+
 
 
 
