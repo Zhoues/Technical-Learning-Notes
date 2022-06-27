@@ -6,13 +6,15 @@
 
 ## 图形化展示结构
 
-![1](C:\Users\这是恩申的哟\Desktop\framework\Git\picture\1.png)
-
-![3](C:\Users\这是恩申的哟\Desktop\framework\Git\picture\3.png)![2](C:\Users\这是恩申的哟\Desktop\framework\Git\picture\2.png)
 
 
 
 
+![1](.\picture\1.png)
+
+![2](.\picture\2.png)
+
+![3](.\picture\3.png)
 
 ## 创建Git仓库
 

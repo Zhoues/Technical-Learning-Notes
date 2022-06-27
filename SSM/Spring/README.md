@@ -40,9 +40,9 @@ IOC把对象创建和对象之间的调用过程交给Spring进行管理
 2. 工厂模式
 3. 反射
 
-![图1](C:\Users\这是恩申的哟\Desktop\Technical-Learning-Notes\SSM\Spring\picture\图1.png)
+![图1](\picture\图1.png)
 
-![图2](C:\Users\这是恩申的哟\Desktop\Technical-Learning-Notes\SSM\Spring\picture\图2.png)
+![图2](\picture\图2.png)
 
 ## IOC接口（BeanFactory,ApplicationContext）
 
@@ -292,8 +292,7 @@ DI：依赖注入，就是输入属性
   <beans xmlns="http://www.springframework.org/schema/beans"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:util="http://www.springframework.org/schema/util"
-         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
-      	 xsi:schemaLocation="http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+         xsi:schemaLocation="http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
   </beans>
 ```
 
@@ -311,6 +310,8 @@ DI：依赖注入，就是输入属性
 	<property name="list" ref="bookList"></property>
 </bean>
 ```
+
+
 
 ## IOC操作Bean管理（FactoryBean）
 
@@ -412,14 +413,190 @@ public class MyBeanPost implements BeanPostProcessor {
 
 自动装配：根据指定装配规则（属性名称或者属性类型），Spring自动将匹配属性值进行注入
 
+实现自动装配：
+
+1. bean标签属性autowire，配置自动装配
+2. autowire属性常用的两个值
+   1. byName 根据属性名称注入，注入值bean的id值和类属性名称一样
+   2. byType根据属性类型注入，
 
 
 
+## IOC操作Bean管理（外部属性文件）
 
+- 在spring配置文件中引入名称空间context
 
+```xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:util="http://www.springframework.org/schema/util"
+         xmlns:context="http://www.springframework.org/schema/context"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd" >
+  </beans>
+```
 
+- 在spring配置文件中引入外部属性配置文件
 
+```xml
+<context:property-placeholder location="classpath：jdbc.proerties"/>
+```
+
+- 用`${}`引入即可
 
 
 
 ## IOC操作Bean管理（基于注解）
+
+什么是注解
+
+1. 注解是代码特殊标记，格式：`@注解名称(属性名称=属性值,属性名称=属性值...)`
+2. 注解可以作用在类上面，方法甚至属性上面
+3. 使用注解目的：简化xml配置
+
+
+
+Spring针对Bean管理中创建对象提供注解
+
+1. `@Component`
+2. `@Service`
+3. `@Controller`
+4. `Repository`
+
+上面四个注解的功能都是一样的，都可以用来创建bean实例
+
+
+
+### 一、基于注解创建对象
+
+1. 引入aop依赖
+2. 开启组件扫描：引入context空间
+
+```xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:util="http://www.springframework.org/schema/util"
+         xmlns:context="http://www.springframework.org/schema/context"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd" >
+      
+      <!--开启组件扫描
+			1. 如果扫描多个包，多个包使用逗号隔开
+			2. 扫描包上层目录
+		-->
+      <context:component-scan base-package=""></context:component-scan>
+</beans>
+```
+
+3. 创建类，在类上创建注解
+
+```java
+package com.example.spring5.service;
+
+import org.springframework.stereotype.Component;
+
+// 在注解里面value属性值可以省略不写
+// 默认值是类名称，首字母小写
+// UserService -- userService
+@Component(value = "userService")   // <bean id="userService" class=".."/>
+public class UserService {
+
+}
+```
+
+4. 开启组件扫描细节配置
+
+```xml
+<!-- 实例1
+ 	use-default-filters="false"：表示现在不使用默认的filter，自己配置filter
+	context:include-filter：设置扫描哪些内容
+		-->
+<context:component-scan base-package="" use-default-filters="false">
+    <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+</context:component-scan>
+
+<!-- 实例1
+	context:exclude-filter：设置不扫描哪些内容
+		-->
+<context:component-scan base-package="">
+    <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+</context:component-scan>
+```
+
+### 二、基于注解方式实现属性注入
+
+**@Autowired：根据属性类型进行自动装配**
+
+1. 把service和dao对象创建，在service和dao类添加创建对象的注解
+1. 在service注入dao对象，在service类添加dao类型属性，在属性上面使用@Autowired注解
+
+@Qualifier：根据属性名称进行注入
+
+1. 一般和@Autowired一起使用（因为@Autowired是根据类型进行自动装配，但是如果有多个实现类会报错）
+2. 根据名称（可以自定义）进行注入
+
+@Resource：根据类型注入也可以根据名称注入
+
+1. 单独的@Resource表示类型注入
+2. @Resource(name="")表示名称注入
+
+@Value：注入普通类型属性
+
+```java
+@Value(value="abc")
+private String name;
+```
+
+
+
+## 三、完全注解开发
+
+1. 创建配置类，替代xml配置文件
+
+```java
+@Configuration //作为配置类
+@ComponentScan(basePackages={"包路径"})
+public class SpringConfig{
+    
+}
+```
+
+2. 编写配置类
+
+```java
+@Test
+public void testService(){
+    ApplicationContext context 
+        = new AnnotationConfigApplicationContext(SpringConfig.class);
+}
+```
+
+
+
+# AOP
+
+什么是AOP
+
+1. 面向切面编程（面向方面编程），利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各个部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率
+2. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -100,7 +100,7 @@ int maxSubarraySumCircular(int* nums, int numsSize){
 
 ### 乘积最大子数组
 
-![image-20210806090156276](C:\Users\这是恩申的哟\AppData\Roaming\Typora\typora-user-images\image-20210806090156276.png)
+![1](.\picture\1.png)
 
 ```c
 int maxProduct(int* nums, int numsSize){
@@ -117,7 +117,7 @@ int maxProduct(int* nums, int numsSize){
 
 ### [乘积为正数的最长子数组长度](https://leetcode-cn.com/problems/maximum-length-of-subarray-with-positive-product/)
 
-![2](C:\Users\这是恩申的哟\Desktop\程序框架算法\C++-function\相关截图\2.png)
+![2](.\picture\2.png)
 
 ```c
 int getMaxLen(int* nums, int numsSize){
@@ -570,7 +570,7 @@ for len = 1..n
 
 ##### 方法一：区间dp
 
-![4](C:\Users\这是恩申的哟\Desktop\程序框架算法\C++-function\相关截图\4.png)
+![4](.\picture\4.png)
 
 ```c
 class Solution {
@@ -670,7 +670,7 @@ char * longestPalindrome(char * s){
 
   子序列定义为：不改变剩余字符顺序的情况下，删除某些字符或者不删除任何字符形成的一个序列。
 
-  ![5](C:\Users\这是恩申的哟\Desktop\程序框架算法\C++-function\相关截图\5.png)
+  ![5](.\picture\5.png)
 
 ```c
 int longestPalindromeSubseq(char* s) {
@@ -1428,7 +1428,7 @@ int main(){
 
 - 主要是学习二维数组怎么滚动至一维。
 
-![3](C:\Users\这是恩申的哟\Desktop\程序框架算法\C++-function\相关截图\3.png)
+![3](.\picture\3.png)
 
 ```c
 for (int i = 0; i < n; ++i) {
