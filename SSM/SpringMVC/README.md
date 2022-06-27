@@ -20,6 +20,7 @@ JavaBean分为两类：
 - 一类称为业务处理 Bean：指 Service 或 Dao 对象，专门用于处理业务逻辑和数据访问。
 
 V：View，视图层，指工程中的html或jsp等页面，作用是与用户进行交互，展示数据
+
 C：Controller，控制层，指工程中的servlet，作用是接收请求和响应浏览器
 
 MVC的工作流程： 用户通过视图层发送请求到服务器，在服务器中请求被Controller接收，Controller调用相应的Model层处理请求，处理完毕将结果返回到Controller，Controller再根据请求处理的结果找到相应的View视图，渲染数据后最终响应给浏览器
