@@ -40,9 +40,9 @@ IOC把对象创建和对象之间的调用过程交给Spring进行管理
 2. 工厂模式
 3. 反射
 
-![图1](\picture\图1.png)
+![图1](.\picture\图1.png)
 
-![图2](\picture\图2.png)
+![图2](.\picture\图2.png)
 
 ## IOC接口（BeanFactory,ApplicationContext）
 
@@ -577,26 +577,128 @@ public void testService(){
 
 # AOP
 
+## AOP基本概念
+
 什么是AOP
 
 1. 面向切面编程（面向方面编程），利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各个部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率
-2. 
+2. 通俗描述：不通过修改源代码的方式，在主干功能里面添加新功能
+
+3. 使用登录的例子说明AOP
+
+![图3](.\picture\图3.png)
+
+## AOP底层原理
+
+AOP底层使用动态代理
+
+有两种情况的动态代理:
+
+​	有接口的情况：JDK动态代理
+
+​	没有接口的情况：使用CGLIB动态代理
+
+![图4](C:\Users\这是恩申的哟\Desktop\Technical-Learning-Notes\SSM\Spring\picture\图4.png)
 
 
 
+## AOP(JDK动态代理)
+
+使用JDK动态代理，使用Proxy类里面的方法
+
+1. 调用newProxyInstance方法
+
+```java
+static Object		newProxyInstance(ClassLoader loader, 类<?>[] interfaces， InvocationHandler h)
+    
+// 返回指定接口的代理类的实例，该接口将方法调用分派给指定的调用处理程序
+第一个参数：类加载器
+第二个参数：增强方法所在的类，这个类实现的接口，支持多个接口
+第三个参数：实现这个接口InvocationHandler，创建代理对象，写增强方法
+```
+
+2. 编写JDK动态代理代码
+   1. 创建接口，定义方法
+   2. 创建接口实现类，实现方法
+   3. 使用Proxy类创建接口的代理对象
+
+```java
+public class JDKProxy {
+	public static void main(String[] args) {
+ 	//创建接口实现类代理对象
+        Class[] interfaces = {UserDao.class};
+
+        UserDaoImpl userDao = new UserDaoImpl();
+        UserDao dao = 
+             (UserDao)Proxy.newProxyInstance(JDKProxy.class.getClassLoader(), interfaces, 
+              new UserDaoProxy(userDao));
+        int result = dao.add(1, 2);
+        System.out.println("result:"+result);
+ 	}
+}
+//创建代理对象代码
+class UserDaoProxy implements InvocationHandler {
+         //1 把创建的是谁的代理对象，把谁传递过来
+         //有参数构造传递
+        private Object obj;
+        public UserDaoProxy(Object obj) {
+        	this.obj = obj;
+     	}
+     //增强的逻辑
+         @Override
+         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+         //方法之前
+         System.out.println("方法之前执行...."+method.getName()+" :传递的参数..."+ 									Arrays.toString(args));
+         //被增强的方法执行
+         Object res = method.invoke(obj, args);
+         //方法之后
+         System.out.println("方法之后执行...."+obj);
+         return res;
+     }
+}
+
+```
 
 
 
+## AOP术语
+
+连接点
+
+​	类里面的哪些方法可以被增强，这些方法成为连接点
+
+切入点
+
+​	实际被真正增强的方法，被称为切入点
+
+通知（增强）
+
+	1. 实际增强的逻辑部分称为通知（增强）
+ 	2. 通知有很多种类型
+     	1. 前置通知
+     	2. 后置通知
+     	3. 环绕通知
+     	4. 异常通知
+     	5. 最终通知：finally
+
+切面
+
+​	把通知应用到切入点的过程
 
 
 
+## AOP准备工作
+
+Spring框架一般基于 AspectJ 实现AOP操作
 
 
 
+什么是AspectJ ：AspectJ 不是Spring 组成部分，独立AOP框架，一般把 AspectJ  和Spring框架一起使用，进行AOP操作
 
 
 
+基于AspectJ 实现AOP操作
 
-
-
+1. 基于xml配置文件实现
+2. 基于注解方式实现（使用）
 
