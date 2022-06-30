@@ -742,9 +742,9 @@ List<User> getUserByTable(@Param("tableName") String tableName);
 
 - 在mapper.xml中设置两个属性
 
- - useGeneratedKeys：设置使用自增的主键  
+  - useGeneratedKeys：设置使用自增的主键  
+  - keyProperty：因为增删改有统一的返回值是受影响的行数，因此只能将获取的自增的主键放在传输的参数user对象的某个属性中
 
-   * keyProperty：因为增删改有统一的返回值是受影响的行数，因此只能将获取的自增的主键放在传输的参数user对象的某个属性中
 
 ```java
 /**
@@ -787,8 +787,8 @@ public void insertUser() {
     - id：设置主键的映射关系  
       - result：设置普通字段的映射关系  
       - 子标签属性：  
-       - property：设置映射关系中实体类中的属性名  
-         - column：设置映射关系中表中的字段名
+        - property：设置映射关系中实体类中的属性名  
+        - column：设置映射关系中表中的字段名
 - 若字段名和实体类中的属性名不一致，则可以通过resultMap设置自定义映射，即使字段名和属性名一致的属性也要映射，也就是全部属性都要列出来
 
 ```xml
@@ -807,19 +807,21 @@ public void insertUser() {
 
 - 若字段名和实体类中的属性名不一致，但是字段名符合数据库的规则（使用_），实体类中的属性名符合Java的规则（使用驼峰）。此时也可通过以下两种方式处理字段名和实体类中的属性的映射关系  
 
-	1. 可以通过为字段起别名的方式，保证和实体类中的属性名保持一致  
-		```xml
-		<!--List<Emp> getAllEmp();-->
-		<select id="getAllEmp" resultType="Emp">
-			select eid,emp_name empName,age,sex,email from t_emp
-		</select>
-		```
-	2. 可以在MyBatis的核心配置文件中的`setting`标签中，设置一个全局配置信息mapUnderscoreToCamelCase，可以在查询表中数据时，自动将_类型的字段名转换为驼峰，例如：字段名user_name，设置了mapUnderscoreToCamelCase，此时字段名就会转换为userName。[核心配置文件详解](#核心配置文件详解)
-		```xml
-	<settings>
-	    <setting name="mapUnderscoreToCamelCase" value="true"/>
-	</settings>
-		```
+~~~xml
+1. 可以通过为字段起别名的方式，保证和实体类中的属性名保持一致  
+	```xml
+	<!--List<Emp> getAllEmp();-->
+	<select id="getAllEmp" resultType="Emp">
+		select eid,emp_name empName,age,sex,email from t_emp
+	</select>
+	```
+2. 可以在MyBatis的核心配置文件中的`setting`标签中，设置一个全局配置信息mapUnderscoreToCamelCase，可以在查询表中数据时，自动将_类型的字段名转换为驼峰，例如：字段名user_name，设置了mapUnderscoreToCamelCase，此时字段名就会转换为userName。[核心配置文件详解](#核心配置文件详解)
+	```xml
+<settings>
+    <setting name="mapUnderscoreToCamelCase" value="true"/>
+</settings>
+	```
+~~~
 
 ## 多对一映射处理
 
@@ -1027,8 +1029,9 @@ List<Emp> getDeptAndEmpByStepTwo(@Param("did") Integer did);
 ## 延迟加载
 
 - 分步查询的优点：可以实现延迟加载，但是必须在核心配置文件中设置全局配置信息：
- - lazyLoadingEnabled：延迟加载的全局开关。当开启时，所有关联对象都会延迟加载  
-   - aggressiveLazyLoading：当开启时，任何方法的调用都会加载该对象的所有属性。 否则，每个属性会按需加载  
+  - lazyLoadingEnabled：延迟加载的全局开关。当开启时，所有关联对象都会延迟加载  
+  - aggressiveLazyLoading：当开启时，任何方法的调用都会加载该对象的所有属性。 否则，每个属性会按需加载  
+
 - 此时就可以实现按需加载，获取的数据是什么，就只会执行相应的sql。此时可通过association和collection中的fetchType属性设置当前的分步查询是否使用延迟加载，fetchType="lazy(延迟加载)|eager(立即加载)"
 
 ```xml
@@ -1067,19 +1070,21 @@ public void getEmpAndDeptByStepOne() {
 - 开启后，需要用到查询dept的时候才会调用相应的SQL语句![](.\picture\延迟加载测试3.png)
 - fetchType：当开启了全局的延迟加载之后，可以通过该属性手动控制延迟加载的效果，fetchType="lazy(延迟加载)|eager(立即加载)"
 
-	```xml
-	<resultMap id="empAndDeptByStepResultMap" type="Emp">
-		<id property="eid" column="eid"></id>
-		<result property="empName" column="emp_name"></result>
-		<result property="age" column="age"></result>
-		<result property="sex" column="sex"></result>
-		<result property="email" column="email"></result>
-		<association property="dept"
-					 select="com.atguigu.mybatis.mapper.DeptMapper.getEmpAndDeptByStepTwo"
-					 column="did"
-					 fetchType="lazy"></association>
-	</resultMap>
-	```
+~~~xml
+```xml
+<resultMap id="empAndDeptByStepResultMap" type="Emp">
+	<id property="eid" column="eid"></id>
+	<result property="empName" column="emp_name"></result>
+	<result property="age" column="age"></result>
+	<result property="sex" column="sex"></result>
+	<result property="email" column="email"></result>
+	<association property="dept"
+				 select="com.atguigu.mybatis.mapper.DeptMapper.getEmpAndDeptByStepTwo"
+				 column="did"
+				 fetchType="lazy"></association>
+</resultMap>
+```
+~~~
 
 # 动态SQL
 
@@ -1142,15 +1147,17 @@ public void getEmpAndDeptByStepOne() {
 
 - 注意：where标签不能去掉条件后多余的and/or
 
-	```xml
-	<!--这种用法是错误的，只能去掉条件前面的and/or，条件后面的不行-->
-	<if test="empName != null and empName !=''">
-	emp_name = #{empName} and
-	</if>
-	<if test="age != null and age !=''">
-		age = #{age}
-	</if>
-	```
+````
+```xml
+<!--这种用法是错误的，只能去掉条件前面的and/or，条件后面的不行-->
+<if test="empName != null and empName !=''">
+emp_name = #{empName} and
+</if>
+<if test="age != null and age !=''">
+	age = #{age}
+</if>
+```
+````
 
 ## trim
 
@@ -1250,51 +1257,57 @@ public void getEmpByChoose() {
    - close：设置foreach标签中的内容的结束符
 - 批量删除
 
-	```xml
-	<!--int deleteMoreByArray(Integer[] eids);-->
-	<delete id="deleteMoreByArray">
-		delete from t_emp where eid in
-		<foreach collection="eids" item="eid" separator="," open="(" close=")">
-			#{eid}
-		</foreach>
-	</delete>
-	```
-	```java
-	@Test
-	public void deleteMoreByArray() {
-		SqlSession sqlSession = SqlSessionUtils.getSqlSession();
-		DynamicSQLMapper mapper = sqlSession.getMapper(DynamicSQLMapper.class);
-		int result = mapper.deleteMoreByArray(new Integer[]{6, 7, 8, 9});
-		System.out.println(result);
-	}
-	```
-	![](Resources/foreach测试结果1.png)
+~~~xml
+```xml
+<!--int deleteMoreByArray(Integer[] eids);-->
+<delete id="deleteMoreByArray">
+	delete from t_emp where eid in
+	<foreach collection="eids" item="eid" separator="," open="(" close=")">
+		#{eid}
+	</foreach>
+</delete>
+```
+```java
+@Test
+public void deleteMoreByArray() {
+	SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+	DynamicSQLMapper mapper = sqlSession.getMapper(DynamicSQLMapper.class);
+	int result = mapper.deleteMoreByArray(new Integer[]{6, 7, 8, 9});
+	System.out.println(result);
+}
+```
+
+~~~
+
+
 
 - 批量添加
 
-	```xml
-	<!--int insertMoreByList(@Param("emps") List<Emp> emps);-->
-	<insert id="insertMoreByList">
-		insert into t_emp values
-		<foreach collection="emps" item="emp" separator=",">
-			(null,#{emp.empName},#{emp.age},#{emp.sex},#{emp.email},null)
-		</foreach>
-	</insert>
-	```
-	```java
-	@Test
-	public void insertMoreByList() {
-		SqlSession sqlSession = SqlSessionUtils.getSqlSession();
-		DynamicSQLMapper mapper = sqlSession.getMapper(DynamicSQLMapper.class);
-		Emp emp1 = new Emp(null,"a",1,"男","123@321.com",null);
-		Emp emp2 = new Emp(null,"b",1,"男","123@321.com",null);
-		Emp emp3 = new Emp(null,"c",1,"男","123@321.com",null);
-		List<Emp> emps = Arrays.asList(emp1, emp2, emp3);
-		int result = mapper.insertMoreByList(emps);
-		System.out.println(result);
-	}
-	```
-	![](Resources/foreach测试结果2.png)
+~~~xml
+```xml
+<!--int insertMoreByList(@Param("emps") List<Emp> emps);-->
+<insert id="insertMoreByList">
+	insert into t_emp values
+	<foreach collection="emps" item="emp" separator=",">
+		(null,#{emp.empName},#{emp.age},#{emp.sex},#{emp.email},null)
+	</foreach>
+</insert>
+```
+```java
+@Test
+public void insertMoreByList() {
+	SqlSession sqlSession = SqlSessionUtils.getSqlSession();
+	DynamicSQLMapper mapper = sqlSession.getMapper(DynamicSQLMapper.class);
+	Emp emp1 = new Emp(null,"a",1,"男","123@321.com",null);
+	Emp emp2 = new Emp(null,"b",1,"男","123@321.com",null);
+	Emp emp3 = new Emp(null,"c",1,"男","123@321.com",null);
+	List<Emp> emps = Arrays.asList(emp1, emp2, emp3);
+	int result = mapper.insertMoreByList(emps);
+	System.out.println(result);
+}
+```
+![](Resources/foreach测试结果2.png)
+~~~
 
 ## SQL片段
 
@@ -1339,6 +1352,8 @@ public void getEmpByChoose() {
 - 使二级缓存失效的情况：两次查询之间执行了任意的增删改，会使一级和二级缓存同时失效
 
 ## 二级缓存的相关配置
+
+
 
 - 在mapper配置文件中添加的cache标签可以设置一些属性
 - eviction属性：缓存回收策略  

@@ -145,4 +145,21 @@ $$
 
 ### 魔法命令
 
-%run
+%run 命令
+
+```c
+%run Python脚本相较于Jupyte rNotebook的位置
+%run ML_Demo/main.py
+```
+
+把Python脚本加载进Notebook（包括函数等内容）
+
+
+
+当然也可以把该Python脚本用import进行引入
+
+```python
+import ML_Demo.main
+from ML_Demo import main
+```
+
