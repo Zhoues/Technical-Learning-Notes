@@ -312,6 +312,24 @@ public class UserController {
 
 # 整合第三方技术
 
+- 导入对应的starter
+- 配置对应的设置或采用默认的配置
+
+## 整合Junit
+
+在SpringBootTest注解下的类进行测试操作即可
+
+```java
+@SpringBootTest
+class SpringBootDemoApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
+```
+
 ## 整合mybatis
 
 pom.xml
@@ -332,5 +350,115 @@ pom.xml
 application.yml
 
 ```yml
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: 
+    username: 
+    password: 
+mybatis:
+  mapper-locations: classpath:Mapper/*xml
+  type-aliases-package: com.example.springboottest.Entity
+
+```
+
+之后的操作基本一致
+
+## 整合mybatis-plus
+
+在Dao层可以直接继承大量API
+
+```java
+@Mapper
+public interface BookDao extends BaseMapper<Book>{
+    
+}
+```
+
+application.yml
+
+```yml
+mybatis-plus:
+	global-config:
+		db-config:
+			table-prefix: tbl_
+			id-typd: auto
+	# 打开日志
+	configuration:
+		log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+```
+
+
+
+## 整合lombok
+
+```xml
+<dependency>
+	<groupID>org.projectlombok</groupID>
+    <artifactId>lombok</artifactId>
+</dependency>
+```
+
+可以直接添加注解完成实体类的快速开发
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public User(){
+    
+}
+```
+
+
+
+# 快速开发SpringBoot
+
+## 数据层使用MP快速开发
+
+```java
+public interface BookDao extends BaseMapper<Book>{
+    // 自己的查询方法
+}
+```
+
+## 业务层使用MP快速开发
+
+```java
+public interface IbookService extends IService<Book>{
+    
+}
+```
+
+```java
+public class BookServiceImpl extends ServiceImpl<BookDao,Book> implementsIbookService{
+    
+}
+```
+
+
+
+## 统一Controller返回信息
+
+定义一个ReturnMessage类，主要包括是否成功，返回信息和返回数据
+
+## 异常处理
+
+在Controller中的utils工具包中添加异常处理方法
+
+```java
+// @ControllerAdvice
+@RestControllerAdvice
+public class ProjectExceptionAdvice{
+    // 拦截所有的异常信息
+    @ExceptionHandler
+    public ReturnMessage doException(Exception ex){
+        // 记录日志
+        // 通知运维
+        // 通知开发
+        ex.printStackTrance();
+        return ReturnMessage(...)
+    }
+}
 ```
 

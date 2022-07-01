@@ -145,7 +145,7 @@ $$
 
 ### 魔法命令
 
-%run 命令
+**%run 命令**
 
 ```c
 %run Python脚本相较于Jupyte rNotebook的位置
@@ -156,10 +156,58 @@ $$
 
 
 
-当然也可以把该Python脚本用import进行引入
+**当然也可以把该Python脚本用import进行引入**
 
 ```python
 import ML_Demo.main
 from ML_Demo import main
+```
+
+
+
+**%timeit 命令**（测试单条指令的运行时间，多次运算后选择最快的几次取平均值）
+
+```python
+%timeit L = [i**2 for i in range(1000000)]
+
+> 210 ms ± 1.75 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+
+
+**%%timeit 命令**（测试指令块的运行时间，多次运算后选择最快的几次取平均值）
+
+```python
+%%timeit
+L = []
+for i in range(1000):
+    L.append(i ** 2)
+
+> 226 µs ± 1.19 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+```
+
+
+
+**%time**命令（测试单条指令的运行时间，只运行一次）
+
+```python
+%time L = [i**2 for i in range(1000000)]
+
+> CPU times: total: 219 ms
+> Wall time: 223 ms
+```
+
+
+
+**%%time**命令（测试单条指令的运行时间，只运行一次）
+
+```python
+%%timeit
+L = []
+for i in range(1000):
+    L.append(i ** 2)
+
+> CPU times: total: 0 ns
+> Wall time: 9.01 ms
 ```
 
