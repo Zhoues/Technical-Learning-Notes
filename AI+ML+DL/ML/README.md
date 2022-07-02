@@ -570,5 +570,166 @@ np.argpartition(A,x)
 
 
 
+### Numpy中的Fancy Indexing
+
+```python
+# 利用下标数组间接获取下标位置的值并构造数组(最后矩阵的样式和下标数组的维数一致)
+v = np.arange(10)
+
+# 一维数组取点
+idx = [3, 5, 8]
+v[idx]
+> [3 5 8]
+
+# 二维数组取点
+idx = [[1, 4], [5, 7]]
+v[np.array(idx)]
+> [[1 4]
+> [5 7]]
+
+# 横纵坐标取点
+v = np.arange(100).reshape(10, -1)
+row = np.array([3, 4, 5])
+col = np.array([6, 7, 8])
+v[row, col]
+> [36 47 58]
+
+## 可以通过控制布尔值来筛选想要的行和列
+v = np.arange(16).reshape(4, -1)
+col = np.array([True, False, True, False])
+v[1:3, col]
+> [[ 4  6]
+>  [ 8 10]]
+```
 
 
+
+### Numpy.array中的比较
+
+```python
+# 直接使用大于小于等于号
+v = np.arange(10)
+v > 3
+> [False False False False  True  True  True  True  True  True]
+
+# 用 count_nonzero 统计有多少个不为零的数
+np.count_nonzero(v<=3)
+
+# 用 any 来判断是否有一个符合标准
+np.any(v == 0)
+
+# 用 all 来判断是否全部满足要求
+np.all(v >= 0)
+
+# 矩阵中的索引部分也可以使用布尔表达式来选择
+v[v % 2 == 0]
+```
+
+
+
+## Matplotlab
+
+```python
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 10, 100)
+
+y = np.sin(x)
+
+# 使用plot绘制横纵坐标的连续图
+plt.plot(x, y)
+
+# 使用scatter绘制纵坐标的散点图
+plt.scatter(x, y)
+
+# 在show之前可以在同一个图中多次调用plot来使多个函数在一张图中(color选定颜色，linestyle选择线的样式， label表示该函数的名称图示)
+plt.plot(x, y, color="red", linestyle="--", label="sin函数")
+
+# 使用xlim和ylim来控制横纵坐标范围
+
+# 使用axis同时对x和y的范围进行操作
+plt.axis([1,10,-2,2])
+
+# 使用 xlabel 和 ylabel 来设置横纵坐标的名称
+
+# 使用 title 来添加标题
+plt.title()
+
+# 使用 legend 来添加图示
+plt.legend()
+
+# 使用show来展示图片
+plt.show()
+```
+
+
+
+# kNN
+
+K近邻算法——k-Nearest Neighbors
+
+KNN算法是一个不需要训练过程的算法
+
+k近邻算法是非常特殊的，可以被认为是没有模型的算法
+
+为了和其他算法统一，可以认为训练数据集本身就是模型本身
+
+## kNN的训练预测流程
+
+![kNN模型训练过程](./picture/kNN模型训练过程.png)
+
+## kNN的实现代码
+
+```python
+import numpy as np
+from math import sqrt
+from collections import Counter
+from sklearn.neighbors import KNeighborsClassifier
+
+# 自己手写的
+def kNN_my_classifier(k, X_train, y_train, x):
+    assert 1 <= k <= X_train.shape[0], "k must be valid"
+    assert X_train.shape[0] == y_train.shape[0], \
+        "the size of X_train must equal to the size of y_train"
+    assert X_train.shape[1] == x.shape[0], \
+        "the feature number of x must be equal to X_train"
+
+    # 计算出 x 向量距离 X_train 中各个数据点的距离
+    distances = [sqrt(np.sum((x - x_train) ** 2)) for x_train in X_train]
+    # 对距离进行排序并得到其索引位置
+    nearest = np.argsort(distances)
+    # 找到 k 近邻的种类
+    topK_y = [y_train[i] for i in nearest[:k]]
+    # 进行种类统计
+    votes = Counter(topK_y)
+    # 返回统计数最多的一个种类
+    return votes.most_common(1)[0][0]
+
+
+# sklearn中自带的
+def kNN_sklearn_classifier(k, X_train, y_train, x):
+    assert 1 <= k <= X_train.shape[0], "k must be valid"
+    assert X_train.shape[0] == y_train.shape[0], \
+        "the size of X_train must equal to the size of y_train"
+    assert X_train.shape[1] == x.shape[0], \
+        "the feature number of x must be equal to X_train"
+    # 创建一个 kNN算法的分类器
+    kNN_classifier = KNeighborsClassifier(n_neighbors=k)
+    # 开始进行拟合
+    kNN_classifier.fit(X_train, y_train)
+    # 由于 sklearn 中对于需要预测的向量为二维，所有需要升维
+    x_predict = x.reshape(1, -1)
+    return kNN_classifier.predict(x_predict)[0]
+```
+
+
+
+## 判断机器学习算法的性能
+
+![判断机器学习算法的性能](./picture/判断机器学习算法的性能.png)
+
+
+
+![调整训练数据和测试数据的比例](C./picture/调整训练数据和测试数据的比例.png)

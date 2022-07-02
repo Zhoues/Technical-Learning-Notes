@@ -1,6 +1,10 @@
 import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
-v = np.random.randint(1, 100, (3, 3))
-print(v)
-print(np.sort(v, axis=0))
-print(np.argsort(v, axis=0))
+x = np.linspace(0, 10, 100)
+
+y = np.sin(x)
+
+plt.plot(x, y)
+plt.show()
