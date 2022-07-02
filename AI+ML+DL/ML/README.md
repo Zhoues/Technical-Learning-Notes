@@ -850,3 +850,139 @@ kNN有三个超参数：
 
 ### 网格搜索（Grid Search）
 
+sklearn提供Grid Search为我们提供寻找超参数的好方法
+
+```python
+import numpy as np
+from sklearn.datasets import load_digits
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV, train_test_split
+
+# 加载数据
+digits = load_digits()
+
+# 获取样本矩阵和标签向量
+X = digits.data
+y = digits.target
+
+# 进行训练集和测试集的分离
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 定义超参数的网格
+param_grid = [
+    {
+        'weights': ['uniform'],
+        'n_neighbors': [i for i in range(1, 11)]
+    },
+    {
+        'weights': ['distance'],
+        'n_neighbors': [i for i in range(1, 11)],
+        'p': [i for i in range(1, 6)]
+    }
+]
+
+# 定义一个分类器
+knn_clf = KNeighborsClassifier()
+
+# 定义一个网格搜索器(knn_clf-原始分类器， param_grid-网格超参数, n_jobs-CPU运行颗数, verbose-输出信息详细度)
+grid_search = GridSearchCV(knn_clf, param_grid, n_jobs=-1, verbose=2)
+
+# 进行超参数拟合
+grid_search.fit(X_train, y_train)
+
+# 获得网格搜索的最佳分类器
+print(grid_search.best_estimator_)
+
+# 获取网格搜索的最佳准确率
+print(grid_search.best_score_)
+
+# 获取网格搜索的最佳超参数
+print(grid_search.best_params_)
+
+```
+
+kNN还有更多超参数的选择
+
+![更多距离的定义](./picture/更多距离的定义.png)
+
+
+
+## 数据归一化
+
+将所有的数据映射到同一尺度
+
+
+
+**最值归一化**(normalization)：把所有数据映射到0-1之间
+$$
+x_{scale} = \frac{x-x_{min}}{x_{max}-x_{min}}
+$$
+适用于分布**有明显边界**的情况；**受outlier影响较大**
+
+
+
+**均值方差归一化**(standardization)：把所有数据归一到均值为0，方差为1的分布中
+$$
+x_{scale}=\frac{x-x_{mean}}{s}
+$$
+
+
+适用于数据分布**没有明显边界**的情况；有可能存在极端数据值
+
+
+
+
+
+![对测试数据集进行归一化](./picture/对测试数据集进行归一化.png)
+
+
+
+### sklearn自带的Scaler
+
+![Scaler](./picture/Scaler.png)
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# 进行训练集和测试集的分离
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 预处理：进行均值方差归一化
+# 创建 Scaler 对象
+standardScaler = StandardScaler()
+# 进行拟合(传递值)
+standardScaler.fit(X_train)
+
+# 查看各个维度的均值
+print(standardScaler.mean_)
+
+# 查看各个维度的方差
+print(standardScaler.scale_)
+
+# 进行归一化处理训练集
+X_train = standardScaler.transform(X_train)
+
+# 利用训练集的均值方差归一化的Scaler对测试集进行归一化
+X_test_standard = standardScaler.transform(X_test)
+
+```
+
+
+
+## kNN算法的思考
+
+优点：
+
+- 可以解决分类问题
+- 天然可以解决多分类问题
+- 可以使用k近邻算法解决回归问题
+
+缺点：
+
+- 效率低下
+- 高度数据相关
+- 预测的结果不具有可解释性
+- 维数灾难（随着维数的增加，”看似相近“的两个点之间的距离越来越大）
+
+![机器学校流程回顾](./picture/机器学校流程回顾.png)

@@ -14,7 +14,7 @@ y = digits.target
 X_train, X_test, y_train, y_test = train_test_split(X, y)
 
 # 创建一个 kNN算法的分类器
-kNN_classifier = KNeighborsClassifier(n_neighbors=4,weights=)
+kNN_classifier = KNeighborsClassifier(n_neighbors=4)
 # 开始进行拟合
 kNN_classifier.fit(X_train, y_train)
 # 进行预测
