@@ -986,3 +986,238 @@ X_test_standard = standardScaler.transform(X_test)
 - 维数灾难（随着维数的增加，”看似相近“的两个点之间的距离越来越大）
 
 ![机器学校流程回顾](./picture/机器学校流程回顾.png)
+
+
+
+
+
+
+
+# 线性回归法
+
+LR（Linear Regression）
+
+## 简单线性回归
+
+![简单线性回归](./picture/简单线性回归.png)
+
+![简单线性回归2](./picture/简单线性回归2.png)
+
+
+
+
+
+
+
+
+
+### 简单线性回归的目标——损失函数最小
+
+![简单线性回归3](./picture/简单线性回归3.png)
+
+
+
+![机器学习的基本思路](./picture/机器学习的基本思路.png)
+
+
+
+
+
+
+
+### 简单线性回归的参数结论——最小二乘法
+
+![简单线性回归的参数求解](./picture/简单线性回归的参数求解.png)
+
+
+
+
+
+### 实现简单线性回归
+
+#### 自己实现的SimpleLinearRegression(无优化)
+
+```python
+import numpy as np
+
+
+class SimpleLinearRegression:
+    def __init__(self):
+        self.a_ = None
+        self.b_ = None
+
+    def fit(self, x_train, y_train):
+        assert x_train.ndim == 1, \
+            "Simple Linear Regressor can only solve single feature training data"
+        assert len(x_train) == len(y_train), \
+            "the size of x_train must be equal to the size of y_train"
+
+        # 获取平均值
+        x_mean = np.mean(x_train)
+        y_mean = np.mean(y_train)
+
+        # 初始化分子分母
+        num = 0.0
+        d = 0.0
+        # 利用最小二乘法的公式求出参数 a_ 和 b_
+        for x, y in zip(x_train, y_train):
+            num += (x - x_mean) * (y - y_mean)
+            d += (x - x_mean) ** 2
+        self.a_ = num / d
+        self.b_ = y_mean - self.a_ * x_mean
+        return self
+
+    def predict(self, x_predict):
+        return np.array(self.a_ * x_predict + self.b_)
+
+```
+
+#### 自己实现的SimpleLinearRegression(向量化运算)
+
+不需要使用for循环，直接转换为向量点乘
+
+![向量化运算](./picture/向量化运算.png)
+
+```python
+import numpy as np
+
+
+class SimpleLinearRegression:
+    def __init__(self):
+        self.a_ = None
+        self.b_ = None
+
+    def fit(self, x_train, y_train):
+        assert x_train.ndim == 1, \
+            "Simple Linear Regressor can only solve single feature training data"
+        assert len(x_train) == len(y_train), \
+            "the size of x_train must be equal to the size of y_train"
+
+        # 获取平均值
+        x_mean = np.mean(x_train)
+        y_mean = np.mean(y_train)
+
+        # 利用最小二乘法的公式求出参数 a_ 和 b_ (采用向量化运算)
+        num = (x_train - x_mean).dot(y_train - y_mean)
+        d = (x_train - x_mean).dot(x_train - x_mean)
+        self.a_ = num / d
+        self.b_ = y_mean - self.a_ * x_mean
+        return self
+
+    def predict(self, x_predict):
+        return np.array(self.a_ * x_predict + self.b_)
+```
+
+
+
+### 回归算法的评价（MSE,RMSE,MAE）
+
+![MSE](./picture/MSE.png)
+
+![RMSE](./picture/RMSE.png)
+
+![MAE](./picture/MAE.png)
+
+#### 自己实现的MSE,RMSE和MAE
+
+```python
+from math import sqrt
+
+import numpy as np
+from sklearn.datasets import load_boston
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+
+# 加载数据
+from my_sklearn.SimpleLinearRegression import SimpleLinearRegression
+
+boston = load_boston()
+
+# 暂时只使用波士顿房价数据的 RM(房间的数量) 这一列
+x = boston.data[:, 5]
+y = boston.target
+
+# 去除不确定的点
+max_y = np.max(y)
+x = x[y < max_y]
+y = y[y < max_y]
+
+# 划分训练集和测试集
+x_train, x_test, y_train, y_test = train_test_split(x, y)
+
+# 创建简单线性回归模型
+reg = SimpleLinearRegression()
+
+# 进行拟合(利用最小二乘法计算a,b)
+reg.fit(x_train, y_train)
+
+# 得到预测结果
+y_predict = reg.predict(x_test)
+
+# 绘制拟合图像
+plt.scatter(x_train, y_train)
+plt.plot(x_train, reg.predict(x_train), color="red")
+plt.show()
+
+
+# MSE
+mse_test = np.sum((y_test - y_predict) ** 2) / len(y_test)
+print(mse_test)
+
+# RMSE
+rmse_test = sqrt(np.sum((y_test - y_predict) ** 2) / len(y_test))
+print(rmse_test)
+
+# MAE
+mae_test = np.sum(np.abs(y_test - y_predict)) / len(y_test)
+print(mae_test)
+
+```
+
+#### sklearn自带的MSE和MAE
+
+```python
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# MSE
+mse_test = mean_squared_error(y_test,y_predict)
+print(mse_test)
+
+# MAE
+mae_test = mean_absolute_error(y_test,y_predict)
+print(mae_test)
+```
+
+
+
+### 最好的衡量线性回归法的指标：R Squared
+
+![R Squared](./picture/R Squared.png)
+
+![R Squared2](./picture/R Squared2.png)
+
+![R Squared3](./picture/R Squared3.png)
+
+```python
+from sklearn.metrics import r2_score
+
+# R Square
+R_Square_test = r2_score(y_test, y_predict)
+
+```
+
+
+
+## 多元线性回归
+
+### 多元线性回归的正规方程解（Normal Equation）
+
+![多元线性回归](./picture/多元线性回归.png)
+
+![多元线性回归2](./picture/多元线性回归2.png)
+
+![多元线性回归3](./picture/多元线性回归3.png)
+
+![多元线性回归4](./picture/多元线性回归4.png)
