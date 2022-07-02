@@ -713,7 +713,7 @@ def kNN_sklearn_classifier(k, X_train, y_train, x):
     assert 1 <= k <= X_train.shape[0], "k must be valid"
     assert X_train.shape[0] == y_train.shape[0], \
         "the size of X_train must equal to the size of y_train"
-    assert X_train.shape[1] == x.shape[0], \
+    assert X_train.shape[1] == x.shape[1], \
         "the feature number of x must be equal to X_train"
     # 创建一个 kNN算法的分类器
     kNN_classifier = KNeighborsClassifier(n_neighbors=k)
@@ -726,10 +726,58 @@ def kNN_sklearn_classifier(k, X_train, y_train, x):
 
 
 
-## 判断机器学习算法的性能
+## 判断机器学习算法的性能（以Iris数据集为例）
 
 ![判断机器学习算法的性能](./picture/判断机器学习算法的性能.png)
 
 
 
-![调整训练数据和测试数据的比例](C./picture/调整训练数据和测试数据的比例.png)
+![调整训练数据和测试数据的比例](./picture/调整训练数据和测试数据的比例.png)
+
+
+
+因此我们需要**训练数据集和测试数据集的分离**(train_test_split)
+
+如何进行分离（保证样本和标签不会因为随机而混乱）：
+
+- 要么就把样本和标签直接拼接在一起，随机打乱之后再进行拆分
+- **要么直接乱序索引即可**
+
+实现一个测试集和训练集分离的方法
+
+```python
+import numpy as np
+
+
+# 进行训练集和测试集的分离
+# X 样本集, y 标签集, test_ratio分割率, seed 随机化综资
+def train_test_split(X, y, test_ratio=0.2, seed=None):
+    assert X.shape[0] == y.shape[0], \
+        "the size of X must be equal to the size of y"
+    assert 0.0 <= test_ratio <= 1.0, \
+        "test_ration must be valid"
+    if seed:
+        np.random.seed(seed)
+    # 进行索引随机化，permutation(x)可以获得 0~x 的随机排列
+    shuffle_indexes = np.random.permutation(len(X))
+
+    # 设置测试数据据的比例和大小
+    test_size = int(len(X) * test_ratio)
+
+    # 获得测试数据集和训练数据集的索引
+    test_indexes = shuffle_indexes[:test_size]
+    train_indexes = shuffle_indexes[test_size:]
+
+    # 利用 Fancy Indexing 快速构建测试集和训练集
+    X_train = X[train_indexes]
+    y_train = y[train_indexes]
+    # 利用 Fancy Indexing 快速构建测试集和训练集
+    X_test = X[test_indexes]
+    y_test = y[test_indexes]
+
+    return X_train, y_train, X_test, y_test
+```
+
+
+
+​	

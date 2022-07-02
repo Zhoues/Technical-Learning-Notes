@@ -4,7 +4,8 @@ from collections import Counter
 from sklearn.neighbors import KNeighborsClassifier
 
 
-def kNN_my_classifier(k, X_train, y_train, x):
+# 自己实现的
+def my_kNN_classifier(k, X_train, y_train, x):
     assert 1 <= k <= X_train.shape[0], "k must be valid"
     assert X_train.shape[0] == y_train.shape[0], \
         "the size of X_train must equal to the size of y_train"
@@ -23,16 +24,17 @@ def kNN_my_classifier(k, X_train, y_train, x):
     return votes.most_common(1)[0][0]
 
 
-def kNN_sklearn_classifier(k, X_train, y_train, x):
+# sklearn自带的
+def sklearn_kNN_classifier(k, X_train, y_train, x):
     assert 1 <= k <= X_train.shape[0], "k must be valid"
     assert X_train.shape[0] == y_train.shape[0], \
         "the size of X_train must equal to the size of y_train"
-    assert X_train.shape[1] == x.shape[0], \
+    assert X_train.shape[1] == x.shape[1], \
         "the feature number of x must be equal to X_train"
     # 创建一个 kNN算法的分类器
     kNN_classifier = KNeighborsClassifier(n_neighbors=k)
     # 开始进行拟合
     kNN_classifier.fit(X_train, y_train)
-    # 由于 sklearn 中对于需要预测的向量为二维，所有需要升维
-    x_predict = x.reshape(1, -1)
-    return kNN_classifier.predict(x_predict)[0]
+    # # 由于 sklearn 中对于需要预测的向量为二维，所有需要升维
+    # x_predict = x.reshape(1, -1)
+    return kNN_classifier.predict(x)
