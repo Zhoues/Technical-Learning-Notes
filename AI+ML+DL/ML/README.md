@@ -682,14 +682,16 @@ k近邻算法是非常特殊的，可以被认为是没有模型的算法
 
 ## kNN的实现代码
 
+### 自己实现的kNN
+
 ```python
 import numpy as np
 from math import sqrt
 from collections import Counter
-from sklearn.neighbors import KNeighborsClassifier
 
-# 自己手写的
-def kNN_my_classifier(k, X_train, y_train, x):
+
+# 自己实现的(没有考虑距离的权重来解决平票问题)
+def my_kNN_classifier(k, X_train, y_train, x):
     assert 1 <= k <= X_train.shape[0], "k must be valid"
     assert X_train.shape[0] == y_train.shape[0], \
         "the size of X_train must equal to the size of y_train"
@@ -707,26 +709,26 @@ def kNN_my_classifier(k, X_train, y_train, x):
     # 返回统计数最多的一个种类
     return votes.most_common(1)[0][0]
 
+```
 
-# sklearn中自带的
-def kNN_sklearn_classifier(k, X_train, y_train, x):
-    assert 1 <= k <= X_train.shape[0], "k must be valid"
-    assert X_train.shape[0] == y_train.shape[0], \
-        "the size of X_train must equal to the size of y_train"
-    assert X_train.shape[1] == x.shape[1], \
-        "the feature number of x must be equal to X_train"
-    # 创建一个 kNN算法的分类器
-    kNN_classifier = KNeighborsClassifier(n_neighbors=k)
-    # 开始进行拟合
-    kNN_classifier.fit(X_train, y_train)
-    # 由于 sklearn 中对于需要预测的向量为二维，所有需要升维
-    x_predict = x.reshape(1, -1)
-    return kNN_classifier.predict(x_predict)[0]
+### sklearn自带的kNN
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+# 创建一个 kNN算法的分类器(没有考虑距离的权重来解决平票问题)
+kNN_classifier = KNeighborsClassifier(n_neighbors=k)
+# 开始进行拟合
+kNN_classifier.fit(X_train, y_train)
+# 进行预测
+kNN_classifier.predict(x)
 ```
 
 
 
-## 判断机器学习算法的性能（以Iris数据集为例）
+
+
+## 训练集与测试集的划分
 
 ![判断机器学习算法的性能](./picture/判断机器学习算法的性能.png)
 
@@ -743,15 +745,20 @@ def kNN_sklearn_classifier(k, X_train, y_train, x):
 - 要么就把样本和标签直接拼接在一起，随机打乱之后再进行拆分
 - **要么直接乱序索引即可**
 
-实现一个测试集和训练集分离的方法
+
+
+### 自己实现的train_test_split
+
+**实现一个测试集和训练集分离的方法**
 
 ```python
 import numpy as np
 
 
+# 自己实现的
 # 进行训练集和测试集的分离
-# X 样本集, y 标签集, test_ratio分割率, seed 随机化综资
-def train_test_split(X, y, test_ratio=0.2, seed=None):
+# X 样本集, y 标签集, test_ratio分割率, seed 随机化种子
+def my_train_test_split(X, y, test_ratio=0.2, seed=None):
     assert X.shape[0] == y.shape[0], \
         "the size of X must be equal to the size of y"
     assert 0.0 <= test_ratio <= 1.0, \
@@ -776,8 +783,70 @@ def train_test_split(X, y, test_ratio=0.2, seed=None):
     y_test = y[test_indexes]
 
     return X_train, y_train, X_test, y_test
+
+
+```
+
+### sklearn自带的train_test_split
+
+```python
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
 ```
 
 
 
-​	
+## 分类准确度
+
+### 自己实现的计算分类准确度accuracy_score
+
+```python
+import numpy as np
+
+# 自己实现的计算准确率的函数
+def my_accuracy_score(y_true, y_predict):
+    assert y_true.shape[0] == y_predict.shape[0], \
+        "the size of y_true must be equal to the size of y_predict"
+    return np.sum(y_true == y_predict) / len(y_true)
+```
+
+### sklearn自带的计算分类准确度accuracy_score
+
+```python
+import numpy as np
+from sklearn.datasets import load_digits
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# 计算准确率
+shot_ratio = accuracy_score(y_test, y_predict)
+
+# 如果不关心预测的结果，可以直接查看准确率，跳过得到y_predict的过程
+kNN_classifier.score(X_test, y_test)
+```
+
+
+
+## 超参数
+
+![超参数和模型参数](./picture/超参数和模型参数.png)
+
+寻找好的超参数：
+
+- 领域知识
+- 经验数值
+- 实验搜索
+
+kNN有三个超参数：
+
+- k的大小（n_neighbors=5）
+- 是否考虑距离的权重来解决平票问题（weights=”distance“/"uniform"）
+- 距离的计算选择（曼哈顿距离，欧拉距离，明可夫斯基距离）（p=2）
+
+
+
+![选择kNN的距离](./picture/选择kNN的距离.png)
+
+### 网格搜索（Grid Search）
+

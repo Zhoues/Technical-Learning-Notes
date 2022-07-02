@@ -897,7 +897,7 @@ except:
 
 try-finally 语句无论是否发生异常都将执行最后的代码。
 
-![try-finally 语句](.\图片\try-finally 语句.png)
+![try-finally 语句](./图片/try-finally 语句.png)
 
 ### 抛出异常
 

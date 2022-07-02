@@ -21,7 +21,7 @@
 ## MyBatis下载
 
 - [MyBatis下载地址](https://github.com/mybatis/mybatis-3)
-- ![](.\picture\MyBatis下载.png)
+- ![](./picture/MyBatis下载.png)
 
 ## 和其它持久化层技术对比
 
@@ -326,12 +326,12 @@ public class UserMapperTest {
 </configuration>
 ```
 
-- ![](.\picture\mapper接口和mapper映射文件在同一包下.png)
+- ![](./picture/mapper接口和mapper映射文件在同一包下.png)
 
 # 默认的类型别名
 
-![](.\picture\默认的类型别名1.png)
-![](.\picture\默认的类型别名2.png)
+![](./picture/默认的类型别名1.png)
+![](./picture/默认的类型别名2.png)
 
 # MyBatis的增删改查
 
@@ -1051,9 +1051,9 @@ public void getEmpAndDeptByStepOne() {
 }
 ```
 
-- 关闭延迟加载，两条SQL语句都运行了![](.\picture\延迟加载测试1.png)
+- 关闭延迟加载，两条SQL语句都运行了![](./picture/延迟加载测试1.png)
 - 开启延迟加载，只运行获取emp的SQL语句
-  ![](.\picture\延迟加载测试2.png)
+  ![](./picture/延迟加载测试2.png)
 
 ```java
 @Test
@@ -1067,7 +1067,7 @@ public void getEmpAndDeptByStepOne() {
 }
 ```
 
-- 开启后，需要用到查询dept的时候才会调用相应的SQL语句![](.\picture\延迟加载测试3.png)
+- 开启后，需要用到查询dept的时候才会调用相应的SQL语句![](./picture/延迟加载测试3.png)
 - fetchType：当开启了全局的延迟加载之后，可以通过该属性手动控制延迟加载的效果，fetchType="lazy(延迟加载)|eager(立即加载)"
 
 ~~~xml
@@ -1201,7 +1201,7 @@ public void getEmpByCondition() {
 }
 ```
 
-![](.\picture\trim测试结果.png)
+![](./picture/trim测试结果.png)
 
 ## choose、when、otherwise
 
@@ -1243,7 +1243,7 @@ public void getEmpByChoose() {
 }
 ```
 
-![](.\picture\choose测试结果.png)
+![](./picture/choose测试结果.png)
 
 - 相当于`if a else if b else if c else d`，只会执行其中一个
 
@@ -1630,12 +1630,12 @@ public void insertMoreByList() {
 
 ### 执行MBG插件的generate目标
 
-- ![](.\picture\执行MBG插件的generate目标.png)
+- ![](./picture/执行MBG插件的generate目标.png)
 - 如果出现报错：`Exception getting JDBC Driver`，可能是pom.xml中，数据库驱动配置错误
- - dependency中的驱动![](.\picture\dependency中的驱动.png)
-   - mybatis-generator-maven-plugin插件中的驱动![](.\picture\插件中的驱动.png)
+ - dependency中的驱动![](./picture/dependency中的驱动.png)
+   - mybatis-generator-maven-plugin插件中的驱动![](./picture/插件中的驱动.png)
    - 两者的驱动版本应该相同
-- 执行结果![](.\picture\逆向执行结果.png)
+- 执行结果![](./picture/逆向执行结果.png)
 
 ## QBC
 
@@ -1644,7 +1644,7 @@ public void insertMoreByList() {
 - `selectByExample`：按条件查询，需要传入一个example对象或者null；如果传入一个null，则表示没有条件，也就是查询所有数据
 - `example.createCriteria().xxx`：创建条件对象，通过andXXX方法为SQL添加查询添加，每个条件之间是and关系
 - `example.or().xxx`：将之前添加的条件通过or拼接其他条件
-  ![](.\picture\example的方法.png)
+  ![](./picture/example的方法.png)
 
 ```java
 @Test public void testMBG() throws IOException {
@@ -1663,13 +1663,13 @@ public void insertMoreByList() {
 }
 ```
 
-![](.\picture\example测试结果.png)
+![](./picture/example测试结果.png)
 
 ### 增改
 
 - `updateByPrimaryKey`：通过主键进行数据修改，如果某一个值为null，也会将对应的字段改为null
  - `mapper.updateByPrimaryKey(new Emp(1,"admin",22,null,"456@qq.com",3));`
-   - ![](.\picture\增删改测试结果1.png)
+   - ![](./picture/增删改测试结果1.png)
 - `updateByPrimaryKeySelective()`：通过主键进行选择性数据修改，如果某个值为null，则不修改这个字段
  - `mapper.updateByPrimaryKeySelective(new Emp(2,"admin2",22,null,"456@qq.com",3));`
    - ![](C:\Users\这是恩申的哟\Desktop\MyBatis\MyBatis\Resources\增删改测试结果2.png)
@@ -1692,7 +1692,7 @@ public void insertMoreByList() {
 ### 配置分页插件
 
 - 在MyBatis的核心配置文件（mybatis-config.xml）中配置插件
-- ![](.\picture\配置分页插件.png)
+- ![](./picture/配置分页插件.png)
 
 ```xml
 <plugins>
@@ -1724,7 +1724,7 @@ public void testPageHelper() throws IOException {
 }
 ```
 
-![](.\picture\分页测试结果.png)
+![](./picture/分页测试结果.png)
 
 ### 分页相关数据
 

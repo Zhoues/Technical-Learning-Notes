@@ -25,7 +25,7 @@ def my_kNN_classifier(k, X_train, y_train, x):
 
 
 # sklearn自带的
-def sklearn_kNN_classifier(k, X_train, y_train, x):
+def sklearn_kNN_classifier(X_train, y_train, x, k=5):
     assert 1 <= k <= X_train.shape[0], "k must be valid"
     assert X_train.shape[0] == y_train.shape[0], \
         "the size of X_train must equal to the size of y_train"

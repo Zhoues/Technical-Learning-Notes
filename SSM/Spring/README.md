@@ -40,9 +40,9 @@ IOC把对象创建和对象之间的调用过程交给Spring进行管理
 2. 工厂模式
 3. 反射
 
-![图1](.\picture\图1.png)
+![图1](./picture/图1.png)
 
-![图2](.\picture\图2.png)
+![图2](./picture/图2.png)
 
 ## IOC接口（BeanFactory,ApplicationContext）
 
@@ -586,7 +586,7 @@ public void testService(){
 
 3. 使用登录的例子说明AOP
 
-![图3](.\picture\图3.png)
+![图3](./picture/图3.png)
 
 ## AOP底层原理
 
@@ -598,7 +598,7 @@ AOP底层使用动态代理
 
 ​	没有接口的情况：使用CGLIB动态代理
 
-![图4](C:\Users\这是恩申的哟\Desktop\Technical-Learning-Notes\SSM\Spring\picture\图4.png)
+![图4](C:\Users\这是恩申的哟\Desktop\Technical-Learning-Notes\SSM\Spring/picture/图4.png)
 
 
 
@@ -674,12 +674,12 @@ class UserDaoProxy implements InvocationHandler {
 通知（增强）
 
 	1. 实际增强的逻辑部分称为通知（增强）
- 	2. 通知有很多种类型
-     	1. 前置通知
-     	2. 后置通知
-     	3. 环绕通知
-     	4. 异常通知
-     	5. 最终通知：finally
+	2. 通知有很多种类型
+	 	1. 前置通知
+	 	2. 后置通知
+	 	3. 环绕通知
+	 	4. 异常通知
+	 	5. 最终通知：finally
 
 切面
 
