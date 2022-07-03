@@ -462,3 +462,330 @@ public class ProjectExceptionAdvice{
 }
 ```
 
+
+
+# 打包与运行
+
+- 对SpringBoot项目打包（指向Maven构建指令package）
+  - 要么`mvn package`
+  - 要么直接双击IDEA右侧Maven中的package指令
+- 运行项目（指向启动指令）
+  - `java -jar springboot.jar`
+  - jar支持命令行启动需要依赖maven插件支持，确认打包时是否具有SpringBoot对应的maven插件
+
+```xml
+    <build>
+        <plugins>
+            <!--  SpringBoot编译打包项目插件  -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+
+
+# 配置高级
+
+## 临时属性
+
+- 使用jar命令启动SpringBoot工程可以使用临时属性替代配置文件中的属性
+- 临时属性添加方式：`java -jar 工程名.jar --属性名=值`
+- 多个临时属性之间使用空格分隔
+- 临时属性必须时当前boot工程支持的属性，否则设置无效
+
+## 开发环境配置临时属性
+
+- 带属性启动SpringBoot程序，为程序添加运行属性
+- 通过编程形式带参数启动SpringBoot程序，为程序添加运行参数
+
+```java
+// SpringBoot项目启动入口类
+@SpringBootApplication      // Springboot核心组件，主要用于开启Spring自动配置
+public class SpringBootDemoApplication {
+
+    public static void main(String[] args) {
+        String[] arg = new String[1];
+        arg[0] = "--server.port=8080";
+        SpringApplication.run(SpringBootDemoApplication.class, arg);
+    }
+}
+```
+
+- 不携带参数启动SpringBoot程序
+
+```java
+// SpringBoot项目启动入口类
+@SpringBootApplication      // Springboot核心组件，主要用于开启Spring自动配置
+public class SpringBootDemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootDemoApplication.class);
+    }
+}
+```
+
+## 配置文件分类
+
+### SpringBoot中4级配置文件
+
+- 1级：file : config/application.yml                             【最高】
+- 2级：file : application.yml
+- 3级：classpath: config/application.yml
+- 4级：classpath: application.yml                                【最低】
+
+
+
+- 1级和2级时留做系统打包之后设置通用属性，1级常用于运维经理进行线上整体项目部署方案调控
+- 3级和4级用于系统开发设置通用属性，3级常用于项目经理进行整体项目的属性调控
+
+
+
+- **多层级配置文件间的属性采用叠加并覆盖的形式作用与程序**
+
+## 自定义配置文件
+
+- 通过启动参数加载配置文件（无需写配置文件的扩展名）
+  - `--spring.config.name=xxx`
+
+- 通过启动参数加载指定文件路径下的配置文件时可以加载多个配置
+  - `--spring.config.location=classpath:/.....`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 多环境开发
+
+## 单文件yml版
+
+- 使用`---`区分环境设置的边界
+- 每一种环境的区别在于加载的配置属性不同
+- 启动某种环境时需要指定启动使用该环境
+
+```yml
+# 应用环境
+# 公共配置
+
+spring:
+  profiles:
+    active: pro
+
+---
+# 生产环境
+spring:
+  config:
+    activate:
+      on-profile: pro
+
+---
+# 开发环境
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+# 测试环境
+spring:
+  config:
+    activate:
+      on-profile: test
+
+```
+
+## 多文件yml版
+
+- 主启动配置文件`application.yml`
+- 环境分类配置文件`application-pro.yml`,`application-dev.yml`,`application-test.yml`
+
+
+
+## 多环境开发分组管理
+
+- 根据**功能**对配置文件中的信息进行拆分，并制作乘独立的配置文件，命名规则如下
+  - `application-devDB.yml`
+  - `application-devRedis.yml`
+  - `application-devMVC.yml`
+
+- 使用**include属性**在激活指定环境的情况下，同时对多个环境进行加载使其生效，多个环境间使用逗号分隔
+- 当主环境dev与其他环境有相同属性时，**主环境属性生效**；其他环境中有相同属性时，**最后加载的环境属性生效**
+
+```yaml
+spring:
+  profiles:
+    active: dev
+    include: devDB, devRedis, devMVC
+```
+
+- 使用group属性替代include属性，降低了属性配置量，可以使用group属性定义多个主环境与子环境的包含关系
+
+```yaml
+spring:
+  profiles:
+    active: dev
+    group: 
+      "dev": devDB, devRedis, devMVC
+      "pro": proDB, proRedis, proMVC
+```
+
+
+
+# 日志
+
+## 日志的基本操作
+
+在代码中使用日志工具记录日志
+
+```java
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/* REST风格开发接口 */
+//  @Controller
+//  @ResponseBody
+@RestController
+@RequestMapping("/users")
+public class UserController {
+    private static final Logger log = LoggerFactory.getLogger((UserController.class));
+    //    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
+    public String save(@RequestBody User user) {
+        System.out.println("user save...");
+        log.debug("debug...");
+        log.info("info...");
+        log.warn("warn...");
+        log.error("error...");
+        return "user save...";
+    }
+
+
+```
+
+设置日志输出级别
+
+```yaml
+# 开启 debug 模式，输出调试信息，常用于检查系统运行状况
+debug: true
+# 设置日志级别，root表示根节点，即整体应用日志级别
+logging:
+  # 设置分组，对某个组设置日志记录
+  group:
+    dev: com.example.controller,com.example.service,com.example.dao
+    iservice: com.alibaba
+  level:
+    root: info
+    # 设置某个包的日志级别
+    com.example.controller: debug
+    # 设置分组的日志级别
+    dev: warn
+```
+
+## 优化日志对象的创建
+
+使用lombok提供的助教@Slf4j简化开发，减少日志对象的声明操作
+
+```java
+@Slf4j
+@RestController
+@RequestMapping("/users")
+public class UserController {
+    @PostMapping
+    public String save(@RequestBody User user) {
+        System.out.println("user save...");
+        log.debug("debug...");
+        log.info("info...");
+        log.warn("warn...");
+        log.error("error...");
+        return "user save...";
+    }
+```
+
+
+
+# 热部署
+
+## 手动热部署
+
+- 添加开发者工具依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+</dependency>
+```
+
+- 激活热部署：Ctrl + F9
+- 关于热部署：
+  - 重启：自定义开发代码，包含类、页面、配置文件等，加载位置restart类加载器
+  - 重载：jar包，加载位置base类加载器
+
+## 自动启动热部署
+
+- 设置自动构建项目
+  - settings => Build,Exeception,Deplyment => Compiler => Build project automatically √
+- 设置自动构建项目
+  - `Ctrl + Alt + Shift + /`打开注册表勾选
+
+## 设置热部署触发的范围
+
+- 默认不触发重启的目录列表
+  - /META-INF/maven
+  - /META-INF/resources
+  - /resources
+  - /static
+  - /public
+  - /templates
+- 手动设置排除项
+
+```yaml
+spring:
+  devtools:
+    restart:
+      exclude: static/**
+```
+
+## 禁用热部署
+
+可以直接在yml中使用enabled为false
+
+```yaml
+spring:
+  devtools:
+    restart:
+      exclude: static/**
+      enabled: false
+```
+
+当然也可以直接在更高基本的设置上设置禁用
+
+```java
+// SpringBoot项目启动入口类
+@SpringBootApplication      // Springboot核心组件，主要用于开启Spring自动配置
+public class SpringBootDemoApplication {
+    public static void main(String[] args) {
+        System.setProperty("spring.devtools.restart.enabled", "false");
+        SpringApplication.run(SpringBootDemoApplication.class, args);
+    }
+}
+```
+
