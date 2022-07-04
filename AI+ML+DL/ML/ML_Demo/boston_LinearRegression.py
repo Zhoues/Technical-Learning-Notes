@@ -3,41 +3,40 @@ from math import sqrt
 import numpy as np
 from sklearn.datasets import load_boston
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 
 # 加载数据
-from my_sklearn.SimpleLinearRegression import SimpleLinearRegression
 
 boston = load_boston()
 
-# 暂时只使用波士顿房价数据的 RM(房间的数量) 这一列
-x = boston.data[:, 5]
+# 暂时只使用波士顿房价数据
+X = boston.data
 y = boston.target
 
 # 去除不确定的点
 max_y = np.max(y)
-x = x[y < max_y]
+X = X[y < max_y]
 y = y[y < max_y]
 
 # 划分训练集和测试集
-x_train, x_test, y_train, y_test = train_test_split(x, y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=666)
 
 # 创建简单线性回归模型
-reg = SimpleLinearRegression()
+reg = LinearRegression()
 
 # 进行拟合(利用最小二乘法计算a,b)
-reg.fit(x_train, y_train)
+reg.fit(X_train, y_train)
 
 # 得到预测结果
-y_predict = reg.predict(x_test)
+# y_predict = reg.predict(X_test)
 
 # 绘制拟合图像
 # plt.scatter(x_train, y_train)
 # plt.plot(x_train, reg.predict(x_train), color="red")
 # plt.show()
 
-# R Square
-R_Square_test = r2_score(y_test, y_predict)
-print(R_Square_test)
+print(reg.coef_)
+print(reg.score(X_test, y_test))

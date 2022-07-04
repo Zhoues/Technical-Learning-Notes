@@ -177,9 +177,11 @@ key命名原则
 
 方案2：使用expire通用命令
 
-	set key value
-	expire key 5
-	pexpire key 5
+```
+set key value
+expire key 5
+pexpire key 5
+```
 
 ### 检查过期时间
 
@@ -295,7 +297,7 @@ key命名原则
 
 就是一个小字典
 
-1. 由field和关链的value组成的键值对
+1. 由field和关联的value组成的键值对
 2. field和value是字符串类型
 3. 一个hash中最多包含2^32-1个键值对
 
