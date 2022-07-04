@@ -1264,5 +1264,209 @@ class LinearRegression:
 #### sklearn自带的线性回归
 
 ```python
+from sklearn.linear_model import LinearRegression
+
+# 创建线性回归模型
+reg = LinearRegression()
+
+# 进行拟合(利用最小二乘法计算a,b)
+reg.fit(X_train, y_train)
+
+print(reg.coef_)
+print(reg.score(X_test, y_test))
 ```
+
+
+
+# 梯度下降法
+
+- 不是一个机器学习算法
+- 是一种基于搜索的最优化方法
+- 作用：最小化一个损失函数
+- 梯度上升法：最大化一个效用函数
+
+
+
+![梯度下降法二维图解](./picture/梯度下降法二维图解.png)
+
+
+
+
+
+![梯度下降法-η](./picture/梯度下降法-η.png)
+
+
+
+![梯度下降法-随机初始点](./picture/梯度下降法-随机初始点.png)
+
+
+
+
+
+
+
+
+
+## 线性回归中的梯度下降法
+
+![线性回归中的梯度下降](./picture/线性回归中的梯度下降.png)
+
+![线性回归中的梯度下降公式化简](./picture/线性回归中的梯度下降公式化简.png)
+
+![线性回归中的梯度下降公式化简2](./picture/线性回归中的梯度下降公式化简2.png)
+
+
+
+### 梯度下降法的向量化和数据标准化
+
+![梯度下降法的向量化和数据标准化](./picture/梯度下降法的向量化和数据标准化.png)
+
+
+
+由于各个指标的度量可能不一样，导致有一些变量影响太大，我们可以**采用数据归一化**来处理整个流程，这样不仅可以加快速度，而且可以加快准确度
+
+
+
+
+
+## 随机梯度下降法
+
+![随机梯度下降法](./picture/随机梯度下降法.png)
+
+![随机梯度下降法2](./picture/随机梯度下降法2.png)
+
+
+
+### sklearn自带的随机梯度下降法
+
+```python
+import numpy as np
+from sklearn.datasets import load_boston
+from sklearn.linear_model import SGDRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# 加载数据
+
+boston = load_boston()
+
+# 使用波士顿房价数据
+X = boston.data
+y = boston.target
+
+# 去除不确定的点
+max_y = np.max(y)
+X = X[y < max_y]
+y = y[y < max_y]
+
+# 划分训练集和测试集
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=666)
+
+# 预处理：进行均值方差归一化
+# 创建 Scaler 对象
+standardScaler = StandardScaler()
+# 进行拟合(传递值)
+standardScaler.fit(X_train)
+
+X_train_standard = standardScaler.transform(X_train)
+X_test_standard = standardScaler.transform(X_test)
+
+# 创建随机梯度下降法的线性回归模型
+reg = SGDRegressor()
+
+reg.fit(X_train_standard, y_train)
+
+print(reg.score(X_test_standard, y_test))
+```
+
+
+
+## 关于梯度的调试
+
+可以先计算好，有一个大致的目标和方向，之后再推导公式进行精细运算
+
+![关于梯度的调试](./picture/关于梯度的调试.png)
+
+```python
+def dJ_debug(theata, X_b, y, epsilon=0.01):
+    res = np.empty(len(theta));
+    for i in range(len(theta)):
+        theta_1 = theta.copy()
+        theta_1[i] += epsilon
+        theta_2 = theta.copy()
+        theta_2[i] += epsilon
+        res[i] = ( J(theta_1, X_b, y) - J(theta_2, X_b, y) ) / (2 * epsilon) 
+    return res
+```
+
+
+
+
+
+# PCA
+
+Principal Component Analysis —————— 主成分分析
+
+- 一个非监督的机器学习算法
+- 主要用于数据的降维
+- 通过降维，可以发现更便于人类理解的特征
+- 其他应用：可视化；去噪
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
