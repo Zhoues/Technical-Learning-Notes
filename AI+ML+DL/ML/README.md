@@ -1625,11 +1625,15 @@ plt.show()
 
 
 
+
+
 ## 学习曲线
 
 ![学习曲线-欠拟合](./picture/学习曲线-欠拟合.png)
 
 ![学习曲线-过拟合](./picture/学习曲线-过拟合.png)
+
+
 
 
 
@@ -1647,13 +1651,139 @@ plt.show()
 
 
 
+```python
+import numpy as np
+from sklearn.model_selection import cross_val_score
+from sklearn.datasets import load_digits
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+
+# 加载数据
+digits = load_digits()
+
+# 获取样本矩阵和标签向量
+X = digits.data
+y = digits.target
+
+# 进行训练集和测试集的分离
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=666)
+
+# 使用交叉验证(其实和网格搜索中的GridSearchCV很接近)
+best_score, best_p, best_k = 0, 0, 0
+for k in range(2, 11):
+    for p in range(1, 6):
+        knn_clf = KNeighborsClassifier(weights="distance", n_neighbors=k, p=p)
+        # 进行交叉验证(cv表示分组的数量)
+        scores = cross_val_score(knn_clf, X_train, y_train, cv=5)
+        # 取平均值作为最后结果
+        score = np.mean(scores)
+        if score > best_score:
+            best_score, best_p, best_k = score, p, k
+print(best_score, best_p, best_k)
+
+```
+
+
+
+### k-folds 交叉检验
+
+![k-folds](./picture/k-folds.png)
+
+
+
+### 留一法 LOO-CV
+
+![LOO-CV](./picture/LOO-CV.png)
+
+
+
+## 偏差方差权衡
+
+Bias Variance Trade off
+
+![偏差与方差](./picture/偏差与方差.png)
+
+![偏差](./picture/偏差.png)
+
+![方差](./picture/方差.png)
+
+![偏差与方差2](./picture/偏差与方差2.png)
+
+
+
+![偏差与方差的矛盾](./picture/偏差与方差的矛盾.png)
+
+![机器学习挑战](./picture/机器学习挑战.png)
+
+
+
+## 模型泛化与岭回归（模型正则化）
+
+岭回归 : Ridge Regression
+
+**模型正则化：简化系数的大小**
+
+![模型正则化](./picture/模型正则化.png)
+
+### sklearn中自带的岭回归
+
+```python
+import numpy as np
+from matplotlib import pyplot as plt
+from skimage.metrics import mean_squared_error
+from sklearn.linear_model import Ridge
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.pipeline import Pipeline
+
+x = np.random.uniform(-3, 3, size=100)
+# 调整为列向量
+X = x.reshape(-1, 1)
+y = 0.5 * x ** 2 + x + 2 + np.random.normal(0, 1, 100)
+
+# 定义一个岭回归
+ridge_reg = Pipeline([
+    ("poly", PolynomialFeatures(degree=20)),
+    ("std_scaler", StandardScaler()),
+    ("ridge_reg", Ridge(alpha=0.001))
+])
+
+# 进行拟合
+ridge_reg.fit(X, y)
+
+# 进行预测
+y_predict = ridge_reg.predict(X)
+
+# 查看方差
+print(mean_squared_error(y,y_predict))
+
+# 进行绘图
+plt.scatter(x, y)
+plt.plot(np.sort(x), y_predict[np.argsort(x)])
+plt.show()
+
+```
+
+
+
+## LASSO
+
+![LASSO](./picture/LASSO.png)
+
+
+
+![LASSO特性](./picture/LASSO特性.png)
 
 
 
 
 
+## L1,L2和弹性网络
 
+![比较Ridge和LASSO](./picture/比较Ridge和LASSO.png)
 
+![L1，L2正则](./picture/L1，L2正则.png)
+
+![弹性网](./picture/弹性网.png)
 
 
 
