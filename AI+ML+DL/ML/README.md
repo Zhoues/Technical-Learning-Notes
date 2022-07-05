@@ -1414,23 +1414,234 @@ Principal Component Analysis —————— 主成分分析
 
 
 
+## PCA步骤
+
+
+
+![PCA1](./picture/PCA1.png)
+
+![PCA2](./picture/PCA2.png)
+
+![PCA3](./picture/PCA3.png)
+
+
+
+![PCA4](./picture/PCA4.png)
+
+
+
+![PCA5](./picture/PCA5.png)
+
+![PCA6](./picture/PCA6.png)
 
 
 
 
 
+## 梯度上升法解决PCA问题
+
+![梯度上升1](./picture/梯度上升1.png)
+
+
+
+![梯度上升2](./picture/梯度上升2.png)
 
 
 
 
 
+## 求数据的前n个主成分
+
+求出第一主成分之后，如何求出下一个主成分
+
+答：数据进行改变，将数据在第一个主成分上的分量去掉
+
+
+
+![求前n个主成分](./picture/求前n个主成分.png)
+
+![求前n个主成分2](./picture/求前n个主成分2.png)
+
+
+
+## 高维数据向低维数据映射
+
+
+
+![高维数据向低维数据映射](./picture/高维数据向低维数据映射.png)
+
+![低维映射回高维](./picture/低维映射回高维.png)
+
+
+
+## sklearn中自带的PCA
+
+
+
+```python
+import numpy as np
+from matplotlib import pyplot as plt
+from sklearn.datasets import load_digits
+from sklearn.decomposition import PCA
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+
+# 加载数据
+digits = load_digits()
+
+# 获取样本矩阵和标签向量
+X = digits.data
+y = digits.target
+
+# 进行训练集和测试集的分离
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# # 利用 explained_variance_ratio_ 查看降维的情况以此来选择降维数
+# # 查看所有维度的降维覆盖率
+# pca = PCA(n_components=X_train.shape[1])
+# pca.fit(X_train)
+# print(pca.explained_variance_ratio_)
+#
+# # 画出覆盖率曲线图
+# plt.plot([i for i in range(X_train.shape[1])],
+#          [np.sum(pca.explained_variance_ratio_[:i + 1])
+#           for i in range(X_train.shape[1])])
+# plt.show()
+
+# 初始化 PCA 对象，其中 n_components 的值表示最后降维后的主成分个数
+# pca = PCA(n_components=50)
+# 初始化 PCA 对象, 其中的小数表示方差覆盖的比率
+pca = PCA(0.99)
+# print(pca.n_components_)
+
+# 进行拟合(先求出前n-2个主成分，然后把n维转化为2维，获得降维矩阵)
+# 1. 梯度上升求一个主成分(demean均值归零，求方差最大)
+# 2. 把数据在该主成分上的分量去掉(向量相减)
+# 3. 直到剩余 n_components 个维度，获得降维矩阵
+pca.fit(X_train)
+
+# 获取降维结果(利用输入矩阵和降维矩阵进行点成)
+X_train_reduction = pca.transform(X_train)
+
+# 获得测试数据的降维结果
+X_test_reduction = pca.transform(X_test)
+
+# 创建一个 kNN算法的分类器
+kNN_classifier = KNeighborsClassifier()
+
+# 开始进行拟合
+kNN_classifier.fit(X_train_reduction, y_train)
+
+# 计算准确率
+print(kNN_classifier.score(X_test_reduction, y_test))
+
+```
 
 
 
 
 
+# 多项式回归
+
+## sklearn自带的多项式回归和Pipeline
+
+### PolynomialFeatures
+
+```python
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+
+x = np.random.uniform(-3, 3, size=100)
+# 调整为列向量
+X = x.reshape(-1, 1)
+y = 0.5 * x ** 2 + x + 2 + np.random.normal(0, 1, 100)
+
+# 进行多项式升维处理,degree表示升至的维度
+poly = PolynomialFeatures(degree=2)
+# 拟合
+poly.fit(X)
+# 调整至指定维数
+X2 = poly.transform(X)
+
+# 采用线性回归
+reg = LinearRegression()
+
+reg.fit(X2, y)
+
+print(reg.coef_)
+```
+
+### Pipeline
+
+```python
+import numpy as np
+from matplotlib import pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.pipeline import Pipeline
+
+x = np.random.uniform(-3, 3, size=100)
+# 调整为列向量
+X = x.reshape(-1, 1)
+y = 0.5 * x ** 2 + x + 2 + np.random.normal(0, 1, 100)
+
+# 定义一个管道，该管道内部为多项式回归执行的步骤
+poly_reg = Pipeline([
+    ("poly", PolynomialFeatures(degree=2)),
+    ("std_scaler", StandardScaler()),
+    ("lin_reg", LinearRegression())
+])
+
+# 进行拟合
+poly_reg.fit(X, y)
+
+# 进行预测
+y_predict = poly_reg.predict(X)
+
+# 进行绘图
+plt.scatter(x, y)
+plt.plot(np.sort(x), y_predict[np.argsort(x)])
+plt.show()
+```
 
 
+
+## 过拟合与欠拟合（泛化能力）
+
+![欠拟合](./picture/欠拟合.png)
+
+![过拟合](./picture/过拟合.png)
+
+
+
+
+
+## 测试数据集的意义
+
+![测试数据集的意义](./picture/测试数据集的意义.png)
+
+
+
+
+
+## 学习曲线
+
+![学习曲线-欠拟合](./picture/学习曲线-欠拟合.png)
+
+![学习曲线-过拟合](./picture/学习曲线-过拟合.png)
+
+
+
+
+
+## 验证数据集与交叉验证
+
+![验证数据集的背景](./picture/验证数据集的背景.png)
+
+
+
+![交叉验证](./picture/交叉验证.png)
 
 
 
