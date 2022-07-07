@@ -2075,6 +2075,157 @@ recall_score(y_test, y_predict, average="micro")
 
 # 支撑向量机 SVM
 
+![SVM概念](./picture/SVM概念.png)
+
+
+
+![SVM概念2](./picture/SVM概念2.png)
+
+
+
+## 最优化 SVM
+
+![最短距离](./picture/最短距离.png)
+
+![最短距离2](./picture/最短距离2.png)
+
+![最短距离3](./picture/最短距离3.png)
+
+![最短距离4](./picture/最短距离4.png)
+
+![最短距离5](./picture/最短距离5.png)
+
+
+
+## Soft SVM 和 SVM 正则化
+
+![Soft SVM](./picture/Soft SVM.png)
+
+
+
+![SVM正则](./picture/SVM正则.png)
+
+
+
+
+
+## sklearn自带的SVM
+
+**和kNN一样，要做数据标准化处理**
+
+
+
+```python
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVC
+
+# 加载数据
+
+iris = load_iris()
+
+# 获取样本矩阵和标签向量
+X = iris.data
+y = iris.target
+
+X = X[y < 2, :2]
+y = y[y < 2]
+
+# 均值方差标准化
+standardScaler = StandardScaler()
+standardScaler.fit(X)
+X_std = standardScaler.transform(X)
+
+# 引入线性 SVM 分类器 LinearSVC (C表示正则化参数)
+svc = LinearSVC(C=1e9)
+svc.fit(X_std, y)
+
+```
+
+
+
+
+
+## SVM中使用多项式特征和核函数
+
+### 多项式特征（手动设置多项式超参数）
+
+```python
+from sklearn.pipeline import Pipeline
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.svm import LinearSVC
+
+X, y = make_moons(noise=0.15, random_state=666)
+
+# 定义一个管道，该管道内部为SVM执行的步骤
+poly_reg = Pipeline([
+    # 生成多项式
+    ("poly", PolynomialFeatures(degree=20)),
+    # 标准化
+    ("std_scaler", StandardScaler()),
+    # 设置模型正则化的参数
+    ("lin_reg", LinearSVC(C=1))
+])
+
+poly_reg.fit(X, y)
+
+plt.scatter(X[y == 0, 0], X[y == 0, 1])
+plt.scatter(X[y == 1, 0], X[y == 1, 1])
+plt.show()
+
+```
+
+### 核函数（不用手动设置多项式超参数）
+
+```python
+from sklearn.pipeline import Pipeline
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.svm import SVC
+
+X, y = make_moons(noise=0.15, random_state=666)
+
+# 定义一个管道，该管道内部为SVM执行的步骤
+poly_reg = Pipeline([
+    # 标准化
+    ("std_scaler", StandardScaler()),
+    # 设置模型正则化的参数(选择多项式核函数)
+    ("kernelSVC_reg", SVC(kernel="poly"))
+])
+
+poly_reg.fit(X, y)
+
+plt.scatter(X[y == 0, 0], X[y == 0, 1])
+plt.scatter(X[y == 1, 0], X[y == 1, 1])
+plt.show()
+```
+
+
+
+
+
+## 什么是核函数
+
+![核函数](./picture/核函数.png)
+
+![核函数2](./picture/核函数2.png)
+
+
+
+![多项式核函数](./picture/多项式核函数.png)
+
+
+
+![多项式核函数2](./picture/多项式核函数2.png)
+
+![多项式核函数3](./picture/多项式核函数3.png)
 
 
 
@@ -2082,34 +2233,83 @@ recall_score(y_test, y_predict, average="micro")
 
 
 
+## 高斯核函数（RBF）
+
+![RBF](./picture/RBF.png)
+
+![RBF2](./picture/RBF2.png)
+
+
+
+### sklearn自带的RBF
+
+```python
+from sklearn.pipeline import Pipeline
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.svm import SVC
+
+X, y = make_moons(noise=0.15, random_state=666)
+
+# 定义一个管道，该管道内部为SVM执行的步骤
+poly_reg = Pipeline([
+    # 标准化
+    ("std_scaler", StandardScaler()),
+    # 设置模型正则化的参数(选择高斯核函数)
+    ("SVC", SVC(kernel="rbf", gamma=1.0))
+])
+
+poly_reg.fit(X, y)
+
+plt.scatter(X[y == 0, 0], X[y == 0, 1])
+plt.scatter(X[y == 1, 0], X[y == 1, 1])
+plt.show()
+```
 
 
 
 
 
+## SVM思想解决回归问题
 
+### sklearn自带的SVR
 
+```python
+import numpy as np
+from sklearn.datasets import load_boston
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import LinearSVR
 
+# 加载数据
+boston = load_boston()
 
+# 暂时只使用波士顿房价数据
+X = boston.data
+y = boston.target
 
+# 去除不确定的点
+max_y = np.max(y)
+X = X[y < max_y]
+y = y[y < max_y]
 
+# 划分训练集和测试集
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=666)
 
+# 定义一个管道，该管道内部为SVM执行的步骤
+poly_reg = Pipeline([
+    # 标准化
+    ("std_scaler", StandardScaler()),
+    # 设置模型正则化的参数
+    ("lin_reg", LinearSVR(epsilon=0.1))
+])
 
+poly_reg.fit(X_train, y_train)
+print(poly_reg.score(X_test, y_test))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 
 
 
