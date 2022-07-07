@@ -2019,7 +2019,7 @@ recall_score(y_test, y_predict)
 
 ![F1 score2](./picture/F1 score2.png)
 
-## sklearn自带的F1 score
+### sklearn自带的F1 score
 
 ```python
 from sklearn.metrics import f1_score
@@ -2029,21 +2029,51 @@ f1_score(y_test, y_predict)
 
 
 
+## 精准率和召回率的平衡
+
+正常情况下，我们选择的决策边界为0，我们可以调整决策边界来改变精准率和召回率
+
+可以使用 decision_function这个方法来查看预测的得分(1和0是根据预测的得分而来的)
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+log_res = LogisticRegression()
+
+log_res.fit(X_train,y_test)
+
+# 查看得分，并可以据此来选定决策边界
+decision_scores = log_reg.decision_function(X_test)
+
+# threshold 为自己定义的决策边界
+y_predit = np.array(decision_scores >= threshold, dtype="int")
+```
 
 
 
 
 
+## ROC曲线
 
 
 
+![FPR](./picture/FPR.png)
+
+## 多分类问题中的混淆矩阵
+
+```python
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+
+confusion_matrix(y_test, y_predict)
+precision_score(y_test, y_predict, average="micro")
+recall_score(y_test, y_predict, average="micro")
+```
 
 
 
-
-
-
-
+# 支撑向量机 SVM
 
 
 
