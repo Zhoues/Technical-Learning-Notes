@@ -1775,6 +1775,48 @@ plt.show()
 
 
 
+### sklearn自带的LASSO回归
+
+```python
+import numpy as np
+from matplotlib import pyplot as plt
+from skimage.metrics import mean_squared_error
+from sklearn.linear_model import Ridge
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.pipeline import Pipeline
+
+x = np.random.uniform(-3, 3, size=100)
+# 调整为列向量
+X = x.reshape(-1, 1)
+y = 0.5 * x ** 2 + x + 2 + np.random.normal(0, 1, 100)
+
+# 定义一个岭回归
+ridge_reg = Pipeline([
+    ("poly", PolynomialFeatures(degree=20)),
+    ("std_scaler", StandardScaler()),
+    ("ridge_reg", Ridge(alpha=0.001))
+])
+
+# 进行拟合
+ridge_reg.fit(X, y)
+
+# 进行预测
+y_predict = ridge_reg.predict(X)
+
+# 查看方差
+print(mean_squared_error(y, y_predict))
+
+# 进行绘图
+plt.scatter(x, y)
+plt.plot(np.sort(x), y_predict[np.argsort(x)])
+plt.show()
+
+```
+
+
+
+
+
 
 
 ## L1,L2和弹性网络
@@ -1784,6 +1826,254 @@ plt.show()
 ![L1，L2正则](./picture/L1，L2正则.png)
 
 ![弹性网](./picture/弹性网.png)
+
+# 逻辑回归
+
+Logistic Regression
+
+
+
+![逻辑回归](./picture/逻辑回归.png)
+
+![逻辑回归2](./picture/逻辑回归2.png)
+
+![Sigmoid函数](./picture/Sigmoid函数.png)
+
+
+
+![逻辑回归3](./picture/逻辑回归3.png)
+
+
+
+## 逻辑回归的损失函数
+
+![逻辑回归的损失函数](./picture/逻辑回归的损失函数.png)
+
+
+
+![逻辑回归的损失函数2](./picture/逻辑回归的损失函数2.png)
+
+![逻辑回归的损失函数3](./picture/逻辑回归的损失函数3.png)
+
+![逻辑回归的损失函数梯度](./picture/逻辑回归的损失函数梯度.png)
+
+
+
+
+
+## 决策边界
+
+
+
+![决策边界](./picture/决策边界.png)
+
+
+
+
+
+## 在逻辑回归中使用多项式特征
+
+配置逻辑回归使用多项式项时考虑使用管道
+
+管道中需要有
+
+- PolynomialFeatures ： 多项式升维处理
+- StandardScaler ： 均值方差标准化
+- LogisticRegression  ： 逻辑回归
+
+然后必须进行模型的正则化防止出现过拟合的情况
+
+
+
+## sklearn自带的逻辑回归（使用正则化）
+
+![逻辑回归使用正则化](./picture/逻辑回归使用正则化.png)
+
+```python
+import numpy as np
+from matplotlib import pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.pipeline import Pipeline
+
+np.random.seed(666)
+X = np.random.normal(0, 1, size=(200, 2))
+y = np.array(X[:, 0] ** 2 + X[:, 1] < 1.5, dtype='int')
+for i in range(20):
+    y[np.random.randint(200)] = 1
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=666)
+
+# 定义一个管道，该管道内部为多项式回归执行的步骤
+poly_reg = Pipeline([
+    # 设置多项式指数系数
+    ("poly", PolynomialFeatures(degree=20)),
+    ("std_scaler", StandardScaler()),
+    
+    # 设置模型正则化的参数
+    ("lin_reg", LogisticRegression(C=0.1, penalty='l2'))
+    
+])
+
+poly_reg.fit(X_train, y_train)
+
+print(poly_reg.score(X_train, y_train))
+print(poly_reg.score(X_test, y_test))
+# 进行绘图
+# plt.scatter(X[y == 0, 0], X[y == 0, 1])
+# plt.scatter(X[y == 1, 0], X[y == 1, 1])
+# plt.show()
+
+```
+
+
+
+## OvR与OvO
+
+
+
+![OvR](./picture/OvR.png)
+
+
+
+![OvO](./picture/OvO.png)
+
+### LogisticRegression自带的OvR和OvO参数
+
+```python
+# LogisticRegression 自带的是OvR
+# 如果想要使用OvO，必须进行 multi_class 和 solver 参数的设置
+log_reg = LogisticRegression(multi_class="multinomial", solver="newton-cg")
+```
+
+
+
+### sklearn自带的OvR和OvO分类器
+
+```python
+from sklearn.datasets import load_iris
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.multiclass import OneVsOneClassifier
+
+# 加载数据
+iris = load_iris()
+
+# 获取样本矩阵和标签向量
+X = iris.data
+y = iris.target
+
+# 进行训练集和测试集的分离
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=666)
+
+log_reg = LogisticRegression()
+
+# 转变为 OvO 多标签分类模式
+ovo = OneVsOneClassifier(log_reg)
+
+ovo.fit(X_train, y_train)
+print(ovo.score(X_test, y_test))
+
+```
+
+
+
+
+
+# 评价分类结果
+
+## 混淆矩阵
+
+![混淆矩阵](./picture/混淆矩阵.png)
+
+
+
+## 精准率和召回率
+
+![精准率](./picture/精准率.png)
+
+
+
+![召回率](./picture/召回率.png)
+
+
+
+## sklearn自带的混淆矩阵，精准率和召回率
+
+```python
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+
+confusion_matrix(y_test, y_predict)
+precision_score(y_test, y_predict)
+recall_score(y_test, y_predict)
+```
+
+
+
+## F1 score
+
+![F1 score](./picture/F1 score.png)
+
+![F1 score2](./picture/F1 score2.png)
+
+## sklearn自带的F1 score
+
+```python
+from sklearn.metrics import f1_score
+
+f1_score(y_test, y_predict)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

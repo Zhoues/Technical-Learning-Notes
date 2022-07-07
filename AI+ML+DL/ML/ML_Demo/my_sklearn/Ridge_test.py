@@ -24,7 +24,7 @@ ridge_reg.fit(X, y)
 y_predict = ridge_reg.predict(X)
 
 # 查看方差
-print(mean_squared_error(y,y_predict))
+print(mean_squared_error(y, y_predict))
 
 # 进行绘图
 plt.scatter(x, y)
