@@ -2313,11 +2313,141 @@ print(poly_reg.score(X_test, y_test))
 
 
 
+# 决策树
+
+![什么是决策树](./picture/什么是决策树.png)
+
+
+
+## 信息熵
+
+![信息熵](./picture/信息熵.png)
+
+![信息熵2](./picture/信息熵2.png)
+
+### sklearn自带的根据信息熵构建决策树
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+# 使用信息熵作为划分依据
+dt_clf = DecisionTreeClassifier(max_depth=2, criterion="entropy")
+```
+
+
+
+## 基尼系数
+
+![基尼系数](./picture/基尼系数.png)
+
+![基尼系数2](./picture/基尼系数2.png)
+
+### sklearn自带的根据基尼系数构建决策树
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+# 使用信息熵作为划分依据
+dt_clf = DecisionTreeClassifier(max_depth=2, criterion="gini")
+```
+
+
+
+## CART与决策树中的超参数
+
+![复杂度](./picture/复杂度.png)
+
+### 超参数
+
+```python
+max_depth = 决策树深度
+min_samples_split = 最小划分样本含量
+max_leaf_nodes = 最多叶子节点
+```
+
+
+
+## 决策树解决回归问题
+
+### sklearn自带的决策树解决回归问题
+
+```python
+from sklearn.tree import DecisionTreeRegressor
+# 决策树解决回归问题
+dt_clf = DecisionTreeRegressor()
+```
 
 
 
 
 
+# 集成学习和随机森林
+
+## sklearn自带的集成学习方式
+
+### Hard Voting(投票决策)
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import VotingClassifier
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=43)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用集成学习
+voting_clf = VotingClassifier([
+    ('log_clf', LogisticRegression()),
+    ('svm_clf', SVC()),
+    ('dt_clf', DecisionTreeClassifier())
+
+], voting='hard')
+
+voting_clf.fit(X_train, y_train)
+print(voting_clf.score(X_test, y_test))
+# plt.scatter(X[y == 0, 0], X[y == 0, 1])
+# plt.scatter(X[y == 1, 0], X[y == 1, 1])
+# plt.show()
+
+```
+
+### Soft Voting(概率决策)
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import VotingClassifier
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=43)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用集成学习
+voting_clf = VotingClassifier([
+    ('log_clf', LogisticRegression()),
+    ('svm_clf', SVC(probability=True)),
+    ('dt_clf', DecisionTreeClassifier())
+
+], voting='soft')
+
+voting_clf.fit(X_train, y_train)
+print(voting_clf.score(X_test, y_test))
+```
+
+
+
+## Bagging 和 Pasting
+
+![Bagging](./picture/Bagging.png)
+
+![Bagging2](./picture/Bagging2.png)
 
 
 
