@@ -2379,7 +2379,9 @@ dt_clf = DecisionTreeRegressor()
 
 
 
-# 集成学习和随机森林
+# 集成学习
+
+
 
 ## sklearn自带的集成学习方式
 
@@ -2447,7 +2449,318 @@ print(voting_clf.score(X_test, y_test))
 
 ![Bagging](./picture/Bagging.png)
 
+
+
 ![Bagging2](./picture/Bagging2.png)
+
+
+
+
+
+![Bagging3](./picture/Bagging3.png)
+
+
+
+![Bagging4](./picture/Bagging4.png)
+
+### sklearn自带的bagging集成学习
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import VotingClassifier
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import BaggingClassifier
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用bagging完成集成学习
+# (n_estimators为集成模型的个数,max_samples为每一个子模型看多少个数据,bootstrap选定是放回取样还是不放回取样)
+bagging_clf = BaggingClassifier(DecisionTreeClassifier(),
+                                n_estimators=500, max_samples=100,
+                                bootstrap=True)
+
+bagging_clf.fit(X_train, y_train)
+print(bagging_clf.score(X_test, y_test))
+
+# plt.scatter(X[y == 0, 0], X[y == 0, 1])
+# plt.scatter(X[y == 1, 0], X[y == 1, 1])
+# plt.show()
+```
+
+
+
+## OOB（Out-of-Bag）
+
+![OOB](./picture/OOB.png)
+
+
+
+### sklearn中自带的OOB
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import VotingClassifier
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import BaggingClassifier
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用bagging完成集成学习
+# (n_estimators为集成模型的个数,max_samples为每一个子模型看多少个数据,
+# bootstrap选定是放回取样还是不放回取样,oob_score表示使用没有使用的数据当作测试集)
+bagging_clf = BaggingClassifier(DecisionTreeClassifier(),
+                                n_estimators=500, max_samples=100,
+                                bootstrap=True, oob_score=True)
+
+bagging_clf.fit(X, y)
+# 使用 oob_score_ 参数来进行计算得分
+print(bagging_clf.oob_score_)
+```
+
+
+
+### 使用n_jobs并行处理
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import VotingClassifier
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import BaggingClassifier
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用bagging完成集成学习
+# (n_estimators为集成模型的个数,max_samples为每一个子模型看多少个数据,
+# bootstrap选定是放回取样还是不放回取样,oob_score表示使用没有使用的数据当作测试集)
+bagging_clf = BaggingClassifier(DecisionTreeClassifier(),
+                                n_estimators=500, max_samples=100,
+                                bootstrap=True, oob_score=True
+                               n_jobs=-1)
+
+bagging_clf.fit(X, y)
+# 使用 oob_score_ 参数来进行计算得分
+print(bagging_clf.oob_score_)
+```
+
+
+
+### 对特征也采用随机采样
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import VotingClassifier
+from matplotlib import pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import BaggingClassifier
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用bagging完成集成学习
+# (n_estimators为集成模型的个数,max_samples为每一个子模型看多少个数据,
+# bootstrap选定是放回取样还是不放回取样,oob_score表示使用没有使用的数据当作测试集
+# max_features为随机选取的特征个数,bootstrap_features为是否放回使用的特征)
+bagging_clf = BaggingClassifier(DecisionTreeClassifier(),
+                                n_estimators=500, max_samples=100,
+                                bootstrap=True, oob_score=True
+                                n_jobs=-1,
+                                max_features=1, bootstrap_features=True)
+
+bagging_clf.fit(X, y)
+# 使用 oob_score_ 参数来进行计算得分
+print(bagging_clf.oob_score_)
+```
+
+
+
+
+
+# 随机森林
+
+## RandomForest
+
+### sklearn自带的随机森林
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_moons
+
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用随机森林完成集成学习
+# (n_estimators 为集成模型的个数，oob_score表示使用没有使用的数据当作测试集)
+rf_clf = RandomForestClassifier(n_estimators=500, random_state=666,
+                                oob_score=True, n_jobs=2, max_leaf_nodes=16)
+
+rf_clf.fit(X, y)
+# 使用 oob_score_ 参数来进行计算得分
+print(rf_clf.oob_score_)
+
+```
+
+
+
+## Extra-Trees
+
+![Extra-Trees](./picture/Extra-Trees.png)
+
+
+
+### sklearn自带的Extra-Trees
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.datasets import make_moons
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用随机森林完成集成学习
+# (n_estimators 为集成模型的个数，oob_score表示使用没有使用的数据当作测试集,bootstrap选定是放回取样还是不放回取样)
+rf_clf = ExtraTreesClassifier(n_estimators=500, random_state=666,
+                              oob_score=True, bootstrap=True)
+
+rf_clf.fit(X, y)
+# 使用 oob_score_ 参数来进行计算得分
+print(rf_clf.oob_score_)
+```
+
+
+
+
+
+# Boosting
+
+## Ada Boosting
+
+不断修正每次学习拟合不好的点
+
+![Ada Boosting](./picture/Ada Boosting.png)
+
+
+
+### sklearn自带的AdaBoosting
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_moons
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用AdaBoosting完成集成学习
+# (n_estimators为集成模型的个数)
+bagging_clf = AdaBoostClassifier(DecisionTreeClassifier(),n_estimators=500)
+
+bagging_clf.fit(X_train, y_train)
+print(bagging_clf.score(X_test, y_test))
+```
+
+
+
+## Gradient Boosting
+
+![Gradient Boosting](./picture/Gradient Boosting.png)
+
+![Gradient Boosting2](./picture/Gradient Boosting2.png)
+
+
+
+### sklearn自带的GradientBoosting
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_moons
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+
+X, y = make_moons(n_samples=500, noise=0.3, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+# 使用GradientBoosting完成集成学习
+# 由于GradientBoosting只能使用决策树，所以基本参数和决策树一致
+# (n_estimators为集成模型的个数)
+gd_clf = GradientBoostingClassifier(max_depth=2, n_estimators=500)
+
+gd_clf.fit(X_train, y_train)
+print(gd_clf.score(X_test, y_test))
+```
+
+
+
+
+
+
+
+# 尾声
+
+最后，学习材料上。
+
+上面说的各个领域或者专题的材料，通常都有书籍或者教材支撑。只要搜索关键字就好。在这方面，我必须说，国内教程差国外教程一大截。无论是数量，可选择性，质量，各个方面。所以有能力阅读英文原版的话，请直接使用英文搜索相关材料。你的可选择性多了不止一个数量级。
+
+如果只谈机器学习竞赛的材料，说实话，现在市面上，我没见过太好的专门介绍机器学习竞赛的材料。（其实在算法竞赛角度，我也没有见过太好的专门介绍的材料。我想主要是因为这种竞赛涵盖的内容太广了，很难用一本书讲清楚。）不过，和算法竞赛一样，最好的材料其实都是散落在互联网上的，需要你一点一点挖掘。这里，其实最大的资源库就是Kaggle本身。Kaggle不仅仅是一个竞赛网站，里面也蕴含了很多有价值的资料。
+
+比如，今年，Kaggle刚刚上线了Kaggle Learn模块，使用Kaggle的数据，来一点点进行机器学习实战。可以参考：https://www.kaggle.com/learn/overview
+
+其次，对于Kaggle的入门级比赛，有很好的Tutorial，请看这个页面的所有Tutorial，只针对一个泰坦尼克数据，使用不同方案解决，是很好的步入机器学习竞赛的第一步：https://www.kaggle.com/c/titanic#tutorials
+
+Kaggle官方博客也有很多好的内容：http://blog.kaggle.com/
+
+在你参加具体比赛的时候，Kaggle的论坛会是你的好帮手：https://www.kaggle.com/discussion
+
+有人整理出了Kaggle比赛中很多问题的第一名的解决方案思路，其实这些内容都是引用上面Kaggle的官方博客或者论坛的内容：）
+
+http://ndres.me/kaggle-past-solutions/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
