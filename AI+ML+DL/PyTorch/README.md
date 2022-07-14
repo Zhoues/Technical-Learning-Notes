@@ -151,6 +151,10 @@ c = b.to_sparse_coo()
 
 ![Function](./picture/Function.png)
 
+
+
+
+
 ## torch.nn库
 
 ![torch.nn库](./picture/torch.nn库.png)
@@ -163,29 +167,45 @@ c = b.to_sparse_coo()
 
 ![torch.nn库4](./picture/torch.nn库4.png)
 
+![torch.nn库5](./picture/torch.nn库5.png)
+
+![torch.nn库6](./picture/torch.nn库6.png)
+
+![torch.nn库7](./picture/torch.nn库7.png)
+
+![torch.nn库8](./picture/torch.nn库8.png)
+
+
+
+# 神经网络
+
+## 基本概念
+
+![神经网络的基本概念](./picture/神经网络的基本概念.png)
+
+![神经网络的基本概念2](./picture/神经网络的基本概念2.png)
+
+![感知器](./picture/感知器.png)
+
+
+
+### 前向运算
+
+![前向运算](./picture/前向运算.png)
+
+
+
+### 反向传播
+
+![反向传播](./picture/反向传播.png)
 
 
 
 
 
+## 利用神经网络解决分类和回归问题
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![利用神经网络解决分类和回归问题](./picture/利用神经网络解决分类和回归问题.png)
 
 
 
