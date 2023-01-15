@@ -514,7 +514,7 @@ int rob(int* nums, int numsSize){
 
 - 二维前缀和的常用算法
 
-  ```
+  ```c++
   void getPrefixSum()//获得前缀和
   {
   	for(i=1;i<=m;i++)
