@@ -171,7 +171,7 @@ DATABASES = {
         #'NAME': BASE_DIR / 'db.mysql',
         'NAME' : 'DjangoTest_mysite1',
         'USER' :  'root',
-        'PASSWORD' : 'Zhou132435689',
+        'PASSWORD' : '88888888',
         'HOST' : '127.0.0.1',
         'PORT' : '3306'
     }
@@ -687,7 +687,7 @@ drop database 数据库名；	#删除数据库
             #'NAME': BASE_DIR / 'db.mysql',
             'NAME' : 'DjangoTest_mysite1',
             'USER' :  'root',
-            'PASSWORD' : 'Zhou132435689',
+            'PASSWORD' : '88888888',
             'HOST' : '127.0.0.1',
             'PORT' : '3306'
         }
